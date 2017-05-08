@@ -1,0 +1,25 @@
+{
+  "name": "startup-bot-service",
+  "version": "1.0.0",
+  "description": "A web service consumed by a chatbot, helping startups finding relevant people and office space.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ljungren/startup-bot-service.git"
+  },
+  "author": "Joakim Ljungren",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ljungren/startup-bot-service/issues"
+  },
+  "homepage": "https://github.com/ljungren/startup-bot-service#readme",
+  "dependencies": {
+    "body-parser": "^1.17.1",
+    "express": "^4.15.2",
+    "request": "^2.81.0"
+  }
+}
