@@ -15,13 +15,13 @@ service.use((req, res, next) => {
 });
 
 
-service.post('', (req,res,next) => {
+service.post('search', (req,res,next) => {
 
-    var speech = req.body.result && req.body.result.parameters && req.body.result.parameters.echoText ? req.body.result.parameters.echoText : "Seems like some problem. Speak again."
+    var test = req.body.result && req.body.result.parameters && req.body.result.parameters.echoText ? req.body.result.parameters.echoText : "Seems like some problem. Speak again."
     return res.json({
-        speech: speech,
-        displayText: speech,
-        source: 'webhook-echo-sample'
+        speech: test,
+        displayText: test,
+        source: 'mio-service'
     });
 
     //get data
