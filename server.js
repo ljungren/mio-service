@@ -15,7 +15,7 @@ service.use((req, res, next) => {
 });
 
 
-service.post('search', (req,res,next) => {
+service.post('/search', (req,res,next) => {
 
     var test = req.body.result && req.body.result.parameters && req.body.result.parameters.echoText ? req.body.result.parameters.echoText : "Seems like some problem. Speak again."
     return res.json({
