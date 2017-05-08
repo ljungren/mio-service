@@ -44,7 +44,7 @@ service.get('/search', (req,res,next) => {
 
 
 //start Server
-const server = service.listen(9000,function(){
+const server = service.listen(9000, () => {
 
    console.log("Listening to port %s",server.address().port);
 
