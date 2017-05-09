@@ -20,7 +20,7 @@ service.get('/', (req,res,next) => {
 
 service.post('/search', (req,res,next) => {
 
-    var test = req.body.result && req.body.result.parameters && req.body.result.parameters.echoText ? req.body.result.parameters.echoText : "This is sample text"
+    var test = req.body.result && req.body.result.parameters && req.body.result.parameters.office ? req.body.result.parameters.office : "This is sample response"
     return res.json({
         speech: test,
         displayText: test,
