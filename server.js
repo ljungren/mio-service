@@ -41,6 +41,7 @@ service.post('/search', (req,res,next) => {
     // });
 
     console.log('req params: '+ JSON.stringify(req.body.result.parameters));
+    console.log('response: '+ JSON.stringify(res));
     var test = req.body.result && req.body.result.parameters && req.body.result.parameters.location ? req.body.result.parameters.location : "This is sample response"
     return res.json({
       speech: test,
