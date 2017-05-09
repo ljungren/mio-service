@@ -22,18 +22,18 @@ service.get('/', (req,res,next) => {
 service.post('/search', (req,res,next) => {
 
   //example data
-  let result = {
-    "source": "agent",
-    "resolvedQuery": "we are a design agency",
-    "action": "maps.search",
-    "actionIncomplete": false,
-    "parameters": {
-      "company-domain": "design",
-      "company-type": "agency"
-    }
-  }
-  console.log('example data: ' + JSON.stringify(result.parameters));
-  console.log('request data: ' + req.body.result.parameters);
+  // let result = {
+  //   "source": "agent",
+  //   "resolvedQuery": "we are a design agency",
+  //   "action": "maps.search",
+  //   "actionIncomplete": false,
+  //   "parameters": {
+  //     "company-domain": "design",
+  //     "company-type": "agency"
+  //   }
+  // }
+  // console.log('example data: ' + result.parameters);
+  // console.log('request data: ' + req.body.result.parameters);
 
   // get data
   // let data = req.body;
