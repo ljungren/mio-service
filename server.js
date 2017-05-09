@@ -2,8 +2,8 @@
 
 const express  = require('express'),
   bodyParser = require('body-parser'),
-  service = express(),
-  config = require('./config.js');
+  service = express();
+  // config = require('./config.js');
 
 service.use(bodyParser.urlencoded({ extended: true }));
 service.use(bodyParser.json());
