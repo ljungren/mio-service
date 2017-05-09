@@ -1,33 +1,30 @@
 'use strict';
 
 const express  = require('express'),
-    bodyParser = require('body-parser'),
-    service = express();
-    // config = require('./config.js');
+  bodyParser = require('body-parser'),
+  service = express(),
+  config = require('./config.js');
 
 service.use(bodyParser.urlencoded({ extended: true }));
 service.use(bodyParser.json());
 
 service.use((req, res, next) => {
-    console.log(req.method, req.url);
-    next();
+  console.log(req.method, req.url);
+  next();
 });
 
 service.get('/', (req,res,next) => {
-    return res.status(200).send('Welcome, api available at /search');
+  return res.status(200).send('Welcome, api available at /search');
 });
 
 
 service.post('/search', (req,res,next) => {
 
-    var test = req.body.result && req.body.result.parameters && req.body.result.parameters.office ? req.body.result.parameters.office : "This is sample response"
-    return res.json({
-        speech: test,
-        displayText: test,
-        source: 'mio-service'
-    });
+    // exBody = {
+    //   company_profile: ''
+    // };
 
-    //get data
+    // get data
     // let data = req.body;
     // //location and company profile
 
@@ -42,6 +39,14 @@ service.post('/search', (req,res,next) => {
     //         }
     //     }
     // });
+
+    console.log('req params: '+ JSON.stringify(req.body.result.parameters));
+    var test = req.body.result && req.body.result.parameters && req.body.result.parameters.location ? req.body.result.parameters.location : "This is sample response"
+    return res.json({
+      speech: test,
+      displayText: test,
+      source: 'mio-service'
+    });
 
 });
 
