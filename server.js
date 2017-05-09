@@ -1,10 +1,9 @@
 'use strict';
 
 const express  = require('express'),
-    path     = require('path'),
     bodyParser = require('body-parser'),
-    service = express(),
-    config = require('./config.js');
+    service = express();
+    // config = require('./config.js');
 
 service.use(bodyParser.urlencoded({ extended: true }));
 service.use(bodyParser.json());
@@ -12,6 +11,10 @@ service.use(bodyParser.json());
 service.use((req, res, next) => {
     console.log(req.method, req.url);
     next();
+});
+
+service.get('/', (req,res,next) => {
+    return res.status(200).send('Welcome, api available at /search');
 });
 
 
