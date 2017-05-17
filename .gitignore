@@ -1,3 +1,5 @@
 node_modules
 npm-debug.log
-*.json
+config.js
+results.json
+example-response.json
