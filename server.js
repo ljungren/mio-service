@@ -36,14 +36,16 @@ service.post('/search', (req,res,next) => {
   console.log('example data: ' + result.parameters);
   //console.log('request data: ' + req.body.result.parameters);
 
-  setTimeout(() => {
+  // setTimeout(() => {
     // return res.json({
     //   speech: 'This is a sample response',
     //   displayText: 'This is a sample response',
     //   source: 'mio-service',
     // });
-    return res.status(200).send(attachments);
-  }, 2000);
+    // return res.status(200).send(attachments);
+  // }, 5000);
+
+  return res.status(200).send(attachments);
 
 });
 
