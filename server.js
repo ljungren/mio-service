@@ -33,19 +33,19 @@ service.post('/search', (req,res,next) => {
       "company-type": "agency"
     }
   }
-  console.log('example data: ' + result.parameters);
+  //console.log('example data: ' + result.parameters);
   //console.log('request data: ' + req.body.result.parameters);
 
   // setTimeout(() => {
-    // return res.json({
-    //   speech: 'This is a sample response',
-    //   displayText: 'This is a sample response',
-    //   source: 'mio-service',
-    // });
+    return res.json({
+      speech: 'This is a sample response',
+      displayText: 'This is a sample response',
+      source: 'mio-service',
+    });
     // return res.status(200).send(attachments);
   // }, 5000);
-
-  return res.status(200).send(attachments);
+  // console.log('response: '+attachments);
+  // return res.status(200).send(attachments);
 
 });
 
