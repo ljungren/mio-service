@@ -5,7 +5,7 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   config = require('./config.js'),
-  attachments = require('./attachments.json')
+  attachments = require('./test.json')
 
 
 service.use(bodyParser.urlencoded({ extended: true }))
