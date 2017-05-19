@@ -5,7 +5,7 @@
             "fallback": "Sorry, something went wrong",
             "callback_id": "sliperiet_action",
             "color": "#91CCEC",
-            "pretext": "I found some great matches. Check it out!",
+            "pretext": "I found a great match!",
             "author_name": "",
             "author_link": "",
             "author_icon": "",
@@ -14,7 +14,7 @@
             "text": "",
             "fields": [
                 {
-                    "title": "*Relevance to you: 93%*",
+                    "title": "Relevance to you: 93%",
                     "value": "Östra Strandgatan 32, 903 33 Umeå\n 2500 SEK per month (per person)\nSpace for 1-15 people",
                     "short": false
                 }
@@ -27,10 +27,10 @@
             "actions": [
                 {
                     "name": "option",
-                    "text": "View website <http://sliperiet.umu.se/>",
+                    "text": "Contact",
                     "style": "primary",
                     "type": "button",
-                    "value": "web"
+                    "value": "contact"
                 },
                 {
                     "name": "option",
@@ -41,7 +41,7 @@
                 },
                 {
                     "name": "option",
-                    "text": "Show next result",
+                    "text": "Search again",
                     "type": "button",
                     "value": "next"
                 }
