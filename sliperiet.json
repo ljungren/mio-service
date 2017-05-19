@@ -1,4 +1,6 @@
 {
+    "speech": "Blah blah",
+    "displayText": "blah blah",
     "data": {
         "slack": {
             "text": "Hej",
