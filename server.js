@@ -5,7 +5,8 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   config = require('./config.js'),
-  attachments = require('./test.json')
+  attachments = require('./test.json'),
+  searchResponse = require('./search-response.js')
 
 
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -30,7 +31,7 @@ service.post('/search', (req,res,next) => {
     displayText: "Thanks for the info! I'll get back to you with what I find in a sec.",
     source: "mio-service",
   }
-  res.json(temp)
+  res.json(searchResponse)
   //res.write(attachments)
   // return res.end()
   
