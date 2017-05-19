@@ -1,9 +1,9 @@
 {
-    "speech": "Blah blah",
-    "displayText": "blah blah",
+    "speech": "",
+    "displayText": "",
     "data": {
         "slack": {
-            "text": "Hej",
+            "text": "",
             "attachments": [
                 {
                     "fallback": "Sliperiet result",

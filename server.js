@@ -5,7 +5,7 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   config = require('./config.js'),
-  sliperiet = require('./sliperiet.json')
+  sliperiet = require('./sliperiet2.json')
 
 
 service.use(bodyParser.urlencoded({ extended: true }))
