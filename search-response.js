@@ -1,5 +1,4 @@
 module.exports = {
-  slack: {
         text: "",
         attachments: [
             {
@@ -54,5 +53,4 @@ module.exports = {
                 ]
             }
         ]
-    }
 }
