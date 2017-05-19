@@ -5,7 +5,9 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   config = require('./config.js'),
-  sliperiet = require('./sliperiet2.json')
+  sliperiet = require('./sliperiet.json'),
+  northern = require('./northern.json')
+
 
 
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -22,30 +24,45 @@ service.get('/', (req,res,next) => {
 
 
 service.post('/search', (req,res,next) => {
-
-  //pass parameters? delayed slack response possible
-
-  let temp = {
-    speech: "Thanks for the info! I'll get back to you with what I find in a sec.",
-    displayText: "Thanks for the info! I'll get back to you with what I find in a sec.",
-    source: "mio-service"
-  }
-  //res.send(sliperiet)
-  //res.write(attachments)
-  // return res.end()
-  
+  //needs data: slack: {}
   return res.status(200).send(sliperiet)
-
 })
 
 service.post('/info', (req,res,next) => {
   //respond with info about requested location/office (sliperiet, house be?)
-  res.send('poop')
+  let response = {}
+  // console.log('action value: ' + JSON.stringify(req.body))
+
+  // switch(req.body.actions[0].value){
+  //   case 'web':
+  //     console.log('link clicked');
+  //     break;
+  //   case 'more':
+  //     console.log('more info requested')
+  //     break;
+  //   case 'next':
+  //     response = showNextResult(req.body)
+  //     break;
+  //   case 'previous':
+  //     response = showPreviousResult(req.body)
+  //     break;
+  //   default:
+  //     response = showNextResult(req.body)
+  // }
+  
+  // return res.status(200).send(response)
+  return res.status(200).send(northern)
 })
+
 //start Server
 const server = service.listen((process.env.PORT || 9000), () => {
 
    console.log("Listening to port %s",server.address().port)
 
 })
+
+let showNext = (body, context) => {
+  return northern
+  //another switch case deciding what button that was pressed and decides the response
+}
 
