@@ -9,8 +9,8 @@
             "author_name": "",
             "author_link": "",
             "author_icon": "",
-            "title": "Sliperiet",
-            "title_link": "http://sliperiet.umu.se/",
+            "title": "The Great Northern",
+            "title_link": "http://www.thegreatnorthern.org/",
             "text": "",
             "fields": [
                 {
@@ -19,15 +19,15 @@
                     "short": false
                 }
             ],
-            "image_url": "http://www.gunseus.com/wp-content/uploads/2014/08/131217_150143-JG.jpg",
-            "thumb_url": "http://www.gunseus.com/wp-content/uploads/2014/08/131217_150143-JG.jpg",
+            "image_url": "http://portal.skelleftea.se/Sve/Bilder/Nyhetsbilder%202014%20oktober%20ff/Pansalen%203.jpg",
+            "thumb_url": "http://portal.skelleftea.se/Sve/Bilder/Nyhetsbilder%202014%20oktober%20ff/Pansalen%203.jpg",
             "footer": "",
             "footer_icon": "",
             "ts": 0,
             "actions": [
                 {
                     "name": "option",
-                    "text": "View website <http://sliperiet.umu.se/>",
+                    "text": "View website <http://www.thegreatnorthern.org/>",
                     "style": "primary",
                     "type": "button",
                     "value": "web"
