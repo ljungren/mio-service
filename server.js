@@ -30,11 +30,11 @@ service.post('/search', (req,res,next) => {
     displayText: "Thanks for the info! I'll get back to you with what I find in a sec.",
     source: "mio-service",
   }
-  //res.write(JSON.stringify(temp))
+  res.json(temp)
   //res.write(attachments)
   // return res.end()
   
-  return res.status(200).send(attachments)
+  //return res.status(200).send(attachments)
 
 })
 
