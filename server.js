@@ -51,7 +51,7 @@ service.post('/info', (req,res,next) => {
   // }
   
   // return res.status(200).send(response)
-  return res.status(200).send(northern)
+  return res.status(200).send(sliperiet)
 })
 
 //start Server
