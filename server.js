@@ -28,7 +28,7 @@ service.get('/', (req,res,next) => {
 service.post('/search', (req,res,next) => {
   //needs data: slack: {}
   return res.json({
-    speech: "I cannot answer this yet. It's really just dummy data :angel:",
+    speech: "I cannot answer this yet. It's really just dummy data :angel: \n(Give response with how relevance score is given by connected stakeholders in region and what those people and companies are called or do. Also explain why and how it is relevant?)",
     source: "mio-service" 
   })
 })
@@ -139,7 +139,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
       console.log('alive_status_code: ' + response && response.statusCode);
       console.log('alive_message: ' + body);
     })
-  }, 1200000)
+  }, 3000000)
 
 })
 
