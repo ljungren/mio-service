@@ -30,23 +30,16 @@ service.post('/search', (req,res,next) => {
   return res.status(200).send(sliperiet)
 })
 
-service.post('/info', (req,res,next) => {
-  //respond with info about requested location/office (sliperiet, house be?)
+service.post('/interaction', (req,res,next) => {
+
+  let test = {
+    replace_original: false,
+    text: "hello"
+  }
+  console.log('test: '+JSON.stringify(test))
+
   let response = {}
-
-  console.log('req.body: '+ JSON.stringify(req.body, null, 4));
-
   let data = JSON.parse(req.body.payload)
-  console.log('data: '+data)
-
-  try{
-    console.log('callback_id: '+data.callback_id)
-    console.log('action value 2: '+data.actions[0].value)
-    console.log('action value: '+data.actions.value)
-  }
-  catch(e){
-    console.log('No value\n')
-  }
 
   let action = data.actions[0].value
   let context = data.callback_id
@@ -81,16 +74,16 @@ let contact = (context) => {
   }
   switch(context){
     case 'sliperiet_action':
-      res.text = 'You can contact Sliperiet at <mailto:sliperiet@umu.se|sliperiet@umu.se> or <tel:+46907865000>'
+      res.text = 'You can contact Sliperiet at <mailto:sliperiet@umu.se|sliperiet@umu.se> or <tel:+46907865000|090 786 50 00>'
       break
     case 'northern_action':
-      res.text = 'You can contact The Great Northern at <mailto:phil@thegreatnorthern.org> or <tel:+46704339904>'
+      res.text = 'You can contact The Great Northern at <mailto:phil@thegreatnorthern.org|phil@thegreatnorthern.org> or <tel:+46704339904|0704 33 99 04>'
       break
     case 'house_action':
-      res.text = 'You can contact House Be at <mailto:andreas@andreaseriksson.se> or <tel:+46707448244>'
+      res.text = 'You can contact House Be at <mailto:andreas@andreaseriksson.se|andreas@andreaseriksson.se> or <tel:+46707448244|0707 44 82 44>'
       break
     case 'lounge_action':
-      res.text = 'You can contact Business Lounge at <mailto:info@businesslounge.se> or <tel:+4687160025>'
+      res.text = 'You can contact Business Lounge at <mailto:info@businesslounge.se|info@businesslounge.se> or <tel:+4687160025|087 16 00 25>'
       break
   }
   return JSON.stringify(res)
