@@ -35,7 +35,7 @@ service.post('/info', (req,res,next) => {
   let response = {}
   // console.log('action value: ' + JSON.stringify(req.body))
   try{
-    console.log('query: '+req.query);
+    console.log('query: '+JSON.stringify(req.query));
     console.log('callback_id: '+req.query.callback_id);
     console.log('value: '+req.query.value);
     console.log('action value: '+req.query.actions.value);
