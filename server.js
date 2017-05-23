@@ -27,8 +27,9 @@ service.get('/', (req,res,next) => {
 
 service.post('/search', (req,res,next) => {
   //needs data: slack: {}
+  //(Give response with how relevance score is given by connected stakeholders in region and what those people and companies are called or do. Also explain why and how it is relevant?)
   return res.json({
-    speech: "I cannot answer this yet. It's really just dummy data :angel: \n(Give response with how relevance score is given by connected stakeholders in region and what those people and companies are called or do. Also explain why and how it is relevant?)",
+    speech: "I cannot reply to this yet. It's really just dummy data :angel: \n",
     source: "mio-service" 
   })
 })
