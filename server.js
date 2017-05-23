@@ -36,7 +36,7 @@ service.post('/interaction', (req,res,next) => {
     replace_original: false,
     text: "hello"
   }
-  console.log('test: '+JSON.stringify(test))
+  console.log('test: '+test)
 
   let response = {}
   let data = JSON.parse(req.body.payload)
@@ -86,7 +86,7 @@ let contact = (context) => {
       res.text = 'You can contact Business Lounge at <mailto:info@businesslounge.se|info@businesslounge.se> or <tel:+4687160025|087 16 00 25>'
       break
   }
-  return JSON.stringify(res)
+  return res
 }
 
 let moreInfo = (context) => {
@@ -109,7 +109,7 @@ let moreInfo = (context) => {
       res.text = '*I found 57 companies and 1254 persons in this region that could be of interest to your company profile. Description:*\nBusiness Lounge offer office facilities in Nacka for our network of small businesses, freelancers and branches, etc. In Nacka Strand we offer about 60 offices in landscape environments and twelve offices. In addition, there are plenty of meeting and conference rooms in different sizes. Our premises are bright and fresh, with an open, interactive and energetic office environment that will be inspiring and stimulating to most. We offer a place where you can grow and exchange experiences, etc. with others. Flexible and simple, dynamic and reliable. It is precisely the interactivity between the companies and individuals, where we have a high collective sense of togetherness and sense of shared drive, which makes a big difference to office space.'
       break
   }
-  return JSON.stringify(res)
+  return res
 }
 
 let showNext = (context) => {
