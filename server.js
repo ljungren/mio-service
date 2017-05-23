@@ -33,30 +33,32 @@ service.post('/search', (req,res,next) => {
 service.post('/info', (req,res,next) => {
   //respond with info about requested location/office (sliperiet, house be?)
   let response = {}
-  // console.log('action value: ' + JSON.stringify(req.body))
+
+  console.log('req.body: '+req.body);
+
+  let data = req.body.query.payload;
+  console.log('data: '+data);
+
   try{
-    console.log('query: '+JSON.stringify(req.body));
-    console.log('callback_id: '+req.body.callback_id);
-    console.log('value: '+req.body.value);
-    console.log('action value: '+req.body.actions.value);
-    console.log('action value: '+req.body.actions.name);
+    console.log('callback_id: '+data.callback_id);
+    console.log('action value: '+data.actions.value);
   }
   catch(e){
     console.log('No value\n');
   }
 
-  switch(req.body.actions.value){
+  switch(data.actions.value){
     case 'contact':
       console.log('contact clicked');
-      response = contact(req.body.callback_id)
+      response = contact(data.callback_id)
       break
     case 'more':
       console.log('more info requested')
-      response = moreInfo(req.body.callback_id)
+      response = moreInfo(data.callback_id)
       break
     case 'next':
       console.log('search again')
-      response = showNext(req.body.callback_id)
+      response = showNext(data.callback_id)
       break
     default:
       console.log('no value found')
