@@ -36,7 +36,7 @@ service.post('/info', (req,res,next) => {
 
   console.log('req.body: '+ JSON.stringify(req.body, null, 4));
 
-  let data = req.body.payload
+  let data = JSON.parse(req.body.payload)
   console.log('data: '+data)
 
   try{
