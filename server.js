@@ -27,7 +27,10 @@ service.get('/', (req,res,next) => {
 
 service.post('/search', (req,res,next) => {
   //needs data: slack: {}
-  return res.status(200).send(sliperiet)
+  return res.json({
+    speech: "I cannot answer this yet. It's really just dummy data :angel:",
+    source: "mio-service" 
+  })
 })
 
 service.post('/interaction', (req,res,next) => {
@@ -101,7 +104,7 @@ let moreInfo = (context) => {
       res.text = '*I found 4 companies and 26 persons in this region that could be of interest to your company profile. Description:*\nAt House Be you can find conference rooms, work areas and social spaces suitable for both lectures, a relaxing sauna and the odd foosball tournament. House Be is the spot where like-minded entrepreneurs, creatives, developers and angel investors meet up, work and socialise. Built around a membership-model. House Be have an offering for both residential companies as well as businesses seeking a temporary solution.'
       break
     case 'lounge_action':
-      res.text = '*I found 57 companies and 1254 persons in this region that could be of interest to your company profile. Description:*\nBusiness Lounge offer office facilities in Nacka for our network of small businesses, freelancers and branches, etc. In Nacka Strand we offer about 60 offices in landscape environments and twelve offices. In addition, there are plenty of meeting and conference rooms in different sizes. Our premises are bright and fresh, with an open, interactive and energetic office environment that will be inspiring and stimulating to most. We offer a place where you can grow and exchange experiences, etc. with others. Flexible and simple, dynamic and reliable. It is precisely the interactivity between the companies and individuals, where we have a high collective sense of togetherness and sense of shared drive, which makes a big difference to office space.'
+      res.text = '*I found 57 companies and 1254 persons in this region that could be of interest to your company profile. However, less is somtimes more. Description:*\nBusiness Lounge offer office facilities in Nacka for our network of small businesses, freelancers and branches, etc. In Nacka Strand we offer about 60 offices in landscape environments and twelve offices. In addition, there are plenty of meeting and conference rooms in different sizes. Our premises are bright and fresh, with an open, interactive and energetic office environment that will be inspiring and stimulating to most. We offer a place where you can grow and exchange experiences, etc. with others. Flexible and simple, dynamic and reliable. It is precisely the interactivity between the companies and individuals, where we have a high collective sense of togetherness and sense of shared drive, which makes a big difference to office space.'
       break
   }
   return res
@@ -128,7 +131,15 @@ let showNext = (context) => {
 //start Server
 const server = service.listen((process.env.PORT || 9000), () => {
 
-   console.log("Listening to port %s",server.address().port)
+  console.log("Listening to port %s",server.address().port)
+
+  setInterval(() => {
+    request('https://mio-service.herokuapp.com/', function (error, response, body) {
+      console.log('alive_error: ' + error);
+      console.log('alive_status_code: ' + response && response.statusCode);
+      console.log('alive_message: ' + body);
+    })
+  }, 1200000)
 
 })
 

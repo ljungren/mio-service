@@ -6,7 +6,7 @@
       "fallback": "Sorry, something went wrong",
       "callback_id": "house_action",
       "color": "#91CCEC",
-      "pretext": "\nThis is a good alternative too!",
+      "pretext": "\n\nThis is a good alternative too!",
       "author_name": "",
       "author_link": "",
       "author_icon": "",
@@ -16,7 +16,7 @@
       "fields": [
         {
           "title": "Relevance to you: 76%",
-          "value": "Hus B, 830 13 Åre\n2300 SEK per month (per person)\nSpace for 1-20 people",
+          "value": "Hus B, 830 13 Åre\n2300 SEK per month (per person)\nSpace for 1-10 people",
           "short": false
         }
       ],

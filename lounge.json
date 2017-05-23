@@ -6,7 +6,7 @@
       "fallback": "Sorry, something went wrong",
       "callback_id": "lounge_action",
       "color": "#91CCEC",
-      "pretext": "\nThis could be an option as well",
+      "pretext": "\n\nThis could be an option as well",
       "author_name": "",
       "author_link": "",
       "author_icon": "",
@@ -16,7 +16,7 @@
       "fields": [
         {
           "title": "Relevance to you: 58%",
-          "value": "Box 1116, 131 26 Nacka Strand\n3900 SEK per month (per person)\nSpace for 1-10 people",
+          "value": "Box 1116, 131 26 Nacka Strand\n3900 SEK per month (per person)\nSpace for 1-8 people",
           "short": false
         }
       ],
