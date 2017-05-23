@@ -35,25 +35,28 @@ service.post('/info', (req,res,next) => {
   let response = {}
   // console.log('action value: ' + JSON.stringify(req.body))
   try{
-    console.log('callback_id: '+req.body.callback_id);
-    console.log('value: '+req.body.actions[0].value);
+    console.log('query: '+req.query);
+    console.log('callback_id: '+req.query.callback_id);
+    console.log('value: '+req.query.value);
+    console.log('action value: '+req.query.actions.value);
+    console.log('action value: '+req.query.actions.name);
   }
   catch(e){
     console.log('No value\n');
   }
 
-  switch(req.body.actions[0].value){
+  switch(req.query.actions.value){
     case 'contact':
       console.log('contact clicked');
-      response = contact(req.body.callback_id)
+      response = contact(req.query.callback_id)
       break
     case 'more':
       console.log('more info requested')
-      response = moreInfo(req.body.callback_id)
+      response = moreInfo(req.query.callback_id)
       break
     case 'next':
       console.log('search again')
-      response = showNext(req.body.callback_id)
+      response = showNext(req.query.callback_id)
       break
     default:
       console.log('no value found')
@@ -72,7 +75,7 @@ let contact = (context) => {
   }
   switch(context){
     case 'sliperiet_action':
-      res.text = 'You can contact Sliperiet at <mailto:sliperiet@umu.se> or <tel:+46907865000>'
+      res.text = 'You can contact Sliperiet at <mailto:sliperiet@umu.se|sliperiet@umu.se> or <tel:+46907865000>'
       break
     case 'northern_action':
       res.text = 'You can contact The Great Northern at <mailto:phil@thegreatnorthern.org> or <tel:+46704339904>'
