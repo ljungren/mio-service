@@ -140,7 +140,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
       console.log('alive_status_code: ' + response && response.statusCode);
       console.log('alive_message: ' + body);
     })
-  }, 3000000)
+  }, 1200000)
 
 })
 
