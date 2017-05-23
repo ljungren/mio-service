@@ -32,21 +32,16 @@ service.post('/search', (req,res,next) => {
 
 service.post('/interaction', (req,res,next) => {
 
-  let test = {
-    replace_original: false,
-    text: "hello"
-  }
-  console.log('test: '+test)
-
   let response = {}
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
   let context = data.callback_id
+  console.log(context + ': ' + action);
 
   switch(action){
     case 'contact':
-      console.log('contact clicked');
+      console.log('contact info requested')
       response = contact(context)
       break
     case 'more':
@@ -54,7 +49,7 @@ service.post('/interaction', (req,res,next) => {
       response = moreInfo(context)
       break
     case 'next':
-      console.log('search again')
+      console.log('new search requested')
       response = showNext(context)
       break
     default:

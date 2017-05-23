@@ -6,7 +6,7 @@
       "fallback": "Sorry, attachment couldn't be loaded",
       "callback_id": "sliperiet_action",
       "color": "#91CCEC",
-      "pretext": "I found a great match!",
+      "pretext": "\nI found a great match!",
       "author_name": "",
       "author_link": "",
       "author_icon": "",

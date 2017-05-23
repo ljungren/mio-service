@@ -6,7 +6,7 @@
         "fallback": "Sorry, attachment couldn't be loaded",
         "callback_id": "northern_action",
         "color": "#91CCEC",
-        "pretext": "Another good option!",
+        "pretext": "\nAnother good option!",
         "author_name": "",
         "author_link": "",
         "author_icon": "",
