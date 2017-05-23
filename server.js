@@ -34,9 +34,9 @@ service.post('/info', (req,res,next) => {
   //respond with info about requested location/office (sliperiet, house be?)
   let response = {}
 
-  console.log('req.body: '+req.body);
+  console.log('req.body: '+ JSON.stringify(req.body, null, 4));
 
-  let data = req.body.query.payload;
+  let data = req.body;
   console.log('data: '+data);
 
   try{
