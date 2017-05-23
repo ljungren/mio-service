@@ -9,7 +9,7 @@
           "fallback": "Sorry, something went wrong",
           "callback_id": "lounge_action",
           "color": "#91CCEC",
-          "pretext": "This is a good alternative too!",
+          "pretext": "This could be an option as well",
           "author_name": "",
           "author_link": "",
           "author_icon": "",
