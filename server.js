@@ -26,10 +26,11 @@ service.get('/', (req,res,next) => {
 })
 
 
+// INVOKE WITH: test: dinosaur prod: api.ai webhook
 service.post('/search', (req,res,next) => {
   //different tasks depending on action
-  let data = JSON.stringify(req.body)
-  console.log('data:'+ data);
+  let data = JSON.parse(req.body)
+  //console.log('data:'+ JSON.stringify(req.body));
 
   console.log('req.body: '+req.body);
 
@@ -49,9 +50,11 @@ service.post('/search', (req,res,next) => {
   })
 })
 
+// INVOKE WITH: message buttons
 service.post('/interaction', (req,res,next) => {
 
   let response = {}
+  console.log('payload:'+ JSON.stringify(req.body.payload));
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
