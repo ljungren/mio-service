@@ -5,17 +5,16 @@ const express  = require('express'),
   bodyParser = require('body-parser'),
   service = express(),
   request = require('request'),
-  pg = require('pg'),
-  config = require('./config.js')
+  config = require('./config.js'),
+  db = require('./db.js')
 
-//import data
+
+//import example data
 const btnRes = require('./data/contact-and-info.js'),
   sliperiet = require('./data/sliperiet.json'),
   northern = require('./data/northern.json'),
   housebe = require('./data/housebe.json'),
   lounge = require('./data/lounge.json')
-
-pg.defaults.ssl = true;
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -34,39 +33,49 @@ service.get('/', (req,res,next) => {
 
 // INVOKE WITH: test: dinosaur prod: api.ai webhook
 service.post('/search', (req,res,next) => {
-  //different tasks depending on action
+  
   // (print request) console.log('data:'+ JSON.stringify(req.body));
   let data = req.body
-  //JSON.parse(req.body.payload)
   let action = data.result.action
+  let user_slack_id = data.originalRequest.data.event.user
 
-  console.log('req.body: '+req.body);
-
-  switch('asd'){
-    case '':
+  let response = null
+  //different tasks depending on action
+  switch(action){
+    case 'identify_user':
+      //new user?
+      let identify = new Promise(() => {
+        return db.getUser(user_slack_id)
+      })
+      identify.then((user) => {
+        console.log('user: '+user)
+        response = user===null ? null : user.user_name
+        // doResponse(response)
+        // if(response){
+        //   return res.json({speech: "Hey " + response + " \n", source: "mio-service"})  
+        // }
+        // return res.json({speech: "I cannot reply to this yet. It's really just dummy data :angel: \n", source: "mio-service"})
+      })
+      
       break
+    case 'location_search':
+      //user searched for office
+      console.log('searched again via text');
+      //doResponse with current context and action:next
+      break
+    case 'relevance_ask':
+      break
+    default:
+      console.log('no action matched');
   }
+  console.log(response);
 
-  // pg.connect(process.env.DATABASE_URL, function(err, client) {
-  //   if (err) throw err;
-  //   console.log('Connected to postgres! Getting schemas...');
-
-  //   client
-  //     .query('SELECT user_id FROM users;')
-  //     .on('row', function(row) {
-  //       console.log(JSON.stringify(row));
-  //     });
-  // });
-  return res.json({
-    speech: "I cannot reply to this yet. It's really just dummy data :angel: \n",
-    source: "mio-service" 
-  })
+  return res.json({speech: "I cannot reply to this yet. It's really just dummy data :angel: \n", source: "mio-service"})
 })
 
 // INVOKE WITH: message buttons
 service.post('/interaction', (req,res,next) => {
 
-  let response = {}
   // (print request) console.log('payload:'+ JSON.stringify(req.body.payload));
   // parse string to JSON
   let data = JSON.parse(req.body.payload)
@@ -75,28 +84,36 @@ service.post('/interaction', (req,res,next) => {
   let context = data.callback_id
   console.log(context + ': ' + action)
 
-  switch(action){
-    case 'contact':
-      console.log('contact info requested')
-      response = contact(context)
-      break
-    case 'more':
-      console.log('more info requested')
-      response = moreInfo(context)
-      break
-    case 'next':
-      console.log('new search requested')
-      res.write(showNext(context))
-      res.write('What do you think?')
-      return res.status(200).end();
-      break
-    default:
-      console.log('no value found')
-  }
+  let response = null
+  response = doResponse(context, action)  
 
+  // response.prototype.speech = 'What do you think?'
   return res.status(200).send(response)
 })
 
+let doResponse = (context, action, param = null) => {
+    switch(action){
+    case 'contact':
+      console.log('contact info requested')
+      return contact(context)
+      break
+    case 'more':
+      console.log('more info requested')
+      return moreInfo(context)
+      break
+    case 'next':
+      console.log('new search requested')
+      return showNext(context)
+      break
+    case '':
+      console.log('user identified')
+      return showNext(context)
+      break
+    default:
+      console.log('no action value found')
+  }
+  return null
+}
 
 //functions
 
