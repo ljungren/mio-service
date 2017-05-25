@@ -38,6 +38,7 @@ service.post('/search', (req,res,next) => {
   // (print request) 
   console.log('data:'+ JSON.stringify(req.body));
   let data = req.body
+  //JSON.parse(req.body.payload)
   let action = data.result.action
 
   console.log('req.body: '+req.body);
@@ -63,8 +64,7 @@ service.post('/interaction', (req,res,next) => {
 
   let response = {}
   // (print request) console.log('payload:'+ JSON.stringify(req.body.payload));
-  let data = req.body.payload;
-  //JSON.parse(req.body.payload)
+  let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
   let context = data.callback_id
