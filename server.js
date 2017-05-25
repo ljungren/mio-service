@@ -4,13 +4,14 @@ const express  = require('express'),
   bodyParser = require('body-parser'),
   service = express(),
   request = require('request'),
+  pg = require('pg'),
   config = require('./config.js'),
-  sliperiet = require('./sliperiet.json'),
-  northern = require('./northern.json'),
-  housebe = require('./housebe.json'),
-  lounge = require('./lounge.json')
+  sliperiet = require('./data/sliperiet.json'),
+  northern = require('./data/northern.json'),
+  housebe = require('./data/housebe.json'),
+  lounge = require('./data/lounge.json')
 
-
+pg.defaults.ssl = true;
 
 service.use(bodyParser.urlencoded({ extended: true }))
 service.use(bodyParser.json())
@@ -21,13 +22,27 @@ service.use((req, res, next) => {
 })
 
 service.get('/', (req,res,next) => {
-  return res.status(200).send('api available at /search and /info')
+  return res.status(200).send('api available')
 })
 
 
 service.post('/search', (req,res,next) => {
-  //needs data: slack: {}
-  //(Give response with how relevance score is given by connected stakeholders in region and what those people and companies are called or do. Also explain why and how it is relevant?)
+  //different tasks depending on action
+  let data = JSON.parse(req.body)
+  console.log('data:'+ data);
+
+  console.log('req.body: 'req.body);
+
+  // pg.connect(process.env.DATABASE_URL, function(err, client) {
+  //   if (err) throw err;
+  //   console.log('Connected to postgres! Getting schemas...');
+
+  //   client
+  //     .query('SELECT user_id FROM users;')
+  //     .on('row', function(row) {
+  //       console.log(JSON.stringify(row));
+  //     });
+  // });
   return res.json({
     speech: "I cannot reply to this yet. It's really just dummy data :angel: \n",
     source: "mio-service" 
