@@ -31,7 +31,7 @@ service.post('/search', (req,res,next) => {
   let data = JSON.parse(req.body)
   console.log('data:'+ data);
 
-  console.log('req.body: 'req.body);
+  console.log('req.body: '+req.body);
 
   // pg.connect(process.env.DATABASE_URL, function(err, client) {
   //   if (err) throw err;
