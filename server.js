@@ -35,13 +35,17 @@ service.get('/', (req,res,next) => {
 // INVOKE WITH: test: dinosaur prod: api.ai webhook
 service.post('/search', (req,res,next) => {
   //different tasks depending on action
-  // (print request) 
-  console.log('data:'+ JSON.stringify(req.body));
+  // (print request) console.log('data:'+ JSON.stringify(req.body));
   let data = req.body
   //JSON.parse(req.body.payload)
   let action = data.result.action
 
   console.log('req.body: '+req.body);
+
+  switch('asd'){
+    case '':
+      break
+  }
 
   // pg.connect(process.env.DATABASE_URL, function(err, client) {
   //   if (err) throw err;
@@ -64,6 +68,7 @@ service.post('/interaction', (req,res,next) => {
 
   let response = {}
   // (print request) console.log('payload:'+ JSON.stringify(req.body.payload));
+  // parse string to JSON
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
@@ -81,7 +86,9 @@ service.post('/interaction', (req,res,next) => {
       break
     case 'next':
       console.log('new search requested')
-      response = showNext(context)
+      res.write(showNext(context))
+      res.write('What do you think?')
+      return res.status(200).end();
       break
     default:
       console.log('no value found')
