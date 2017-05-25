@@ -28,7 +28,7 @@ service.get('/', (req,res,next) => {
 
 service.post('/search', (req,res,next) => {
   //different tasks depending on action
-  let data = JSON.parse(req.body)
+  let data = JSON.stringify(req.body)
   console.log('data:'+ data);
 
   console.log('req.body: '+req.body);
