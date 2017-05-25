@@ -3,3 +3,5 @@ npm-debug.log
 config.js
 data/results.json
 tables.sql
+api_ai_post.json
+slack_post.json
