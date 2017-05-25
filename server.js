@@ -6,15 +6,8 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   config = require('./config.js'),
-  db = require('./db.js')
-
-
-//import example data
-const btnRes = require('./data/contact-and-info.js'),
-  sliperiet = require('./data/sliperiet.json'),
-  northern = require('./data/northern.json'),
-  housebe = require('./data/housebe.json'),
-  lounge = require('./data/lounge.json')
+  db = require('./db.js'),
+  actions = require('./actions.js')
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -25,13 +18,12 @@ service.use((req, res, next) => {
 })
 
 //routes
-
 service.get('/', (req,res,next) => {
   return res.status(200).send('api available')
 })
 
 
-// INVOKE WITH: test: dinosaur prod: api.ai webhook
+// INVOKE WITH: test: dinosaur, prod: api.ai webhook
 service.post('/search', (req,res,next) => {
   
   // (print request) console.log('data:'+ JSON.stringify(req.body));
@@ -49,6 +41,11 @@ service.post('/search', (req,res,next) => {
       })
       identify.then((user) => {
         console.log('user: '+user)
+
+        //If user exist, respond with something
+
+        //If not, respond with something else and then add user to db
+        
         response = user===null ? null : user.user_name
         // doResponse(response)
         // if(response){
@@ -64,11 +61,11 @@ service.post('/search', (req,res,next) => {
       //doResponse with current context and action:next
       break
     case 'relevance_ask':
+      console.log('relevance was asked');
       break
     default:
       console.log('no action matched');
   }
-  console.log(response);
 
   return res.json({speech: "I cannot reply to this yet. It's really just dummy data :angel: \n", source: "mio-service"})
 })
@@ -91,94 +88,31 @@ service.post('/interaction', (req,res,next) => {
   return res.status(200).send(response)
 })
 
+//functions
+
 let doResponse = (context, action, param = null) => {
     switch(action){
     case 'contact':
       console.log('contact info requested')
-      return contact(context)
+      return actions.contact(context)
       break
     case 'more':
       console.log('more info requested')
-      return moreInfo(context)
+      return actions.moreInfo(context)
       break
     case 'next':
       console.log('new search requested')
-      return showNext(context)
+      return actions.showNext(context)
       break
-    case '':
+    case 'identify_user':
       console.log('user identified')
-      return showNext(context)
+      return actions.showNext(context)
       break
     default:
       console.log('no action value found')
   }
   return null
 }
-
-//functions
-
-let contact = (context) => {
-  //return object based on context
-  let res = {
-    replace_original: false,
-    text: ""
-  }
-  switch(context){
-    case 'sliperiet_action':
-      res.text = btnRes.sliperiet.contact
-      break
-    case 'northern_action':
-      res.text = btnRes.northern.contact
-      break
-    case 'house_action':
-      res.text = btnRes.housebe.contact
-      break
-    case 'lounge_action':
-      res.text = btnRes.housebe.contact
-      break
-  }
-  return res
-}
-
-let moreInfo = (context) => {
-  //return object based on context
-  let res = {
-    replace_original: false,
-    text: ""
-  }
-  switch(context){
-    case 'sliperiet_action':
-      res.text = btnRes.sliperiet.info
-      break
-    case 'northern_action':
-      res.text = btnRes.northern.info
-      break
-    case 'house_action':
-      res.text = btnRes.housebe.info
-      break
-    case 'lounge_action':
-      res.text = btnRes.lounge.info
-      break
-  }
-  return res
-}
-
-let showNext = (context) => {
-  //return object based on context
-  switch(context){
-    case 'sliperiet_action':
-      return northern
-      break
-    case 'northern_action':
-      return housebe
-      break
-    case 'house_action':
-      return lounge
-      break
-  }
-  return sliperiet
-}
-
 
 
 //start Server
