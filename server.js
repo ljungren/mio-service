@@ -23,7 +23,7 @@ service.get('/', (req,res,next) => {
 })
 
 
-// INVOKE WITH: test: dinosaur, prod: api.ai webhook
+// INVOKE WITH: api.ai webhook (test: "dinosaur")
 service.post('/search', (req,res,next) => {
 
   // (print request) console.log('data:'+ JSON.stringify(req.body));
@@ -32,10 +32,9 @@ service.post('/search', (req,res,next) => {
   let user_slack_id = data.originalRequest.data.event.user
 
   // no callback_id/context
-  getResponse(action, null, user_slack_id)
-    .then((response) => {
-      return res.json({speech: "I cannot reply to this yet "+response+". It's really just dummy data :angel: \n", source: "mio-service"})
-    })
+  getResponse(action, null, user_slack_id).then((response) => {
+    return res.json({speech: "I cannot reply to this yet "+response+". It's really just dummy data :angel: \n", source: "mio-service"})
+  })
 
   //Hello there "+response+"! My name is Mio. I can help you find a place that's relevant to your company, by social terms, so that you can find an optimal place to extend your connections and base your operations. You can start by briefly explaining to me what it is your company does.
   
@@ -72,17 +71,21 @@ let getResponse = (action, context, param1=null, param2=null) => {
       console.log('new search requested')
       return actions.showNext(context)
       break
+    case 'smalltalk.greetings.hello':
+      console.log('user said hello')
+      //if known user, say "Hi Joakim! welcome back", else, instructions
+      break
     case 'identify_user':
       console.log('identify user')
       return actions.identify(param1)
       break
     case 'location_search':
       //user searched for office
-      console.log('searched again via text');
+      console.log('searched again via text')
       //doResponse with current context and action:next
       break
     case 'relevance_ask':
-      console.log('relevance was asked');
+      console.log('relevance was asked')
       break
     default:
       console.log('no action value found')

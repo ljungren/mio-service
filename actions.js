@@ -78,15 +78,14 @@ module.exports = {
         //If not, respond with something else and then add user to db
         
         resolve(user===null ? null : user.user_name)
+
+      }).then((user) => {
+        //add user after response
       })
     })
 
-    //add user after response
-    ident.then((user) => {
-      //add user to database if not null
-    })
-
     return ident
+
   },
 
 }
