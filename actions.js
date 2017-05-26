@@ -79,8 +79,8 @@ module.exports = {
         
         resolve(user===null ? null : user.user_name)
 
-      }).then((user) => {
-        //add user after response
+      }).then((user_name) => {
+        //add user after response, if not exist
       })
     })
 
