@@ -1,3 +1,5 @@
+//inport modules
+const db = require('./db.js')
 //import example data
 const btnRes = require('./data/contact-and-info.js'),
   sliperiet = require('./data/sliperiet.json'),
@@ -64,5 +66,27 @@ module.exports = {
         break
     }
     return sliperiet
-  }
+  },
+  identify: (user_slack_id) => {
+
+    let ident = new Promise((resolve, reject) => {
+      db.getUser(user_slack_id).then((user) => {
+        console.log('user: '+JSON.stringify(user))
+
+        //If user exist, respond with something
+
+        //If not, respond with something else and then add user to db
+        
+        resolve(user===null ? null : user.user_name)
+      })
+    })
+
+    //add user after response
+    ident.then((user) => {
+      //add user to database if not null
+    })
+
+    return ident
+  },
+
 }
