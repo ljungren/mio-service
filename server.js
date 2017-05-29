@@ -6,8 +6,7 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   pg = require('pg'),
-  config = require('./config.js'),
-  actions = require('./actions.js')
+  actions = require('./actions/actions.js')
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -31,13 +30,10 @@ service.post('/search', (req,res,next) => {
   let action = data.result.action
   let user_slack_id = data.originalRequest.data.event.user
 
-  // no callback_id/context
   getResponse(action, null, user_slack_id).then((response) => {
-    return res.json({speech: "I cannot reply to this yet "+response+". It's really just dummy data :angel: \n", source: "mio-service"})
+    return res.json({speech: response, source: "mio-service"})
+    //return res.json({speech: "I cannot reply to this yet "+response+". It's really just dummy data :angel: \n", source: "mio-service"})
   })
-
-  //Hello there "+response+"! My name is Mio. I can help you find a place that's relevant to your company, by social terms, so that you can find an optimal place to extend your connections and base your operations. You can start by briefly explaining to me what it is your company does.
-  
 })
 
 // INVOKE WITH: message buttons
@@ -72,8 +68,15 @@ let getResponse = (action, context, param1=null, param2=null) => {
       return actions.showNext(context)
       break
     case 'smalltalk.greetings.hello':
-      console.log('user said hello')
+      console.log('user said hello')      
       //if known user, say "Hi Joakim! welcome back", else, instructions
+      return new Promise((resolve, reject)=>{
+        actions.identify(param1).then((user)=>{
+          actions.hello(user).then((response) => {
+            resolve(response)
+          })
+        })
+      })
       break
     case 'identify_user':
       console.log('identify user')
