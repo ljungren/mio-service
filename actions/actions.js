@@ -74,49 +74,80 @@ module.exports = {
     //returns user name or null
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-
-        //respond with user, null if not exist
-        resolve(user)
-
         //pass user to info complementation
         return user
-
       }).then((user) => {
-        // if no name available, get user info from slack 
-        if(user){
-          if(user.user_name===null || user.user_name===undefined){
-            getSlackUserInfo(user_slack_id).then((info) => {
-              // complement user info
-              user.user_name = info.user.name
-              //pass user to db insert
-              return user
-            })
+        addUserName(user, user_slack_id).then((usr) => {
+          resolve(usr)
+          return usr
+        }).then((usr) => {
+          //add user if not exists
+          if(usr && !(usr===undefined)){
+            if(usr.insert){
+              db.addUser(usr.user_slack_id, usr.user_name)
+              console.log('adding new user to db')
+            }
+            else{
+              console.log('user already in db: '+usr.user_name)
+            }
           }
-        }
+        })
       })
-      // .then((user) => {
-      //   //add user if not exists
-      //   console.log('user: '+JSON.stringify(user))
-      //   if(!user){
-      //     //db.addUser(user_slack_id)
-      //     console.log('Adding new user to db');
-      //   }
-      //   else{
-      //     console.log('User already in db: '+user.user_name);
-      //   }
-      // })
     })
   },
-  hello: (user) => {
+  intro: (user) => {
     return new Promise((resolve, reject) => {
-      // console.log('user exists in hello?: '+ !(user===null))
-      resolve(user===null ? greeting.unknown : greeting.known(user.user_name, user.user_current_context)) 
+      console.log('sending response');
+      resolve((user.user_current_context===null || user.user_current_context===undefined) ? greeting.unknown(user.user_name) : greeting.known(user.user_name, user.user_current_context))
+
+    }).catch((err) => {
+      console.log('user request not valid')
     })
   }
 }
 
+let addContext= (user, slack_id) => {
+
+}
+
+let addUserName = (user, slack_id) => {
+
+  return new Promise((resolve, reject) => {
+
+    getSlackUserInfo(slack_id).then((info) => {
+      // get user info from slack
+      if(info.ok){
+        //slack req ok
+        if(user){
+          //user exists in db
+          user['insert'] = false
+          if(user.user_name===null || user.user_name===undefined || user.user_name===""){
+            // complement user name, if no name
+            console.log('adding user name')
+            user.user_name = info.user.profile.first_name
+            db.updateUser(user.user_slack_id, user.user_name)
+          }
+        }
+        else{
+          //user is not in db, create user object
+          console.log('user is not in db, creating user...')
+          user = {
+            user_slack_id: slack_id,
+            user_name: info.user.profile.first_name,
+            insert: true
+          }
+        }
+      }
+      else{
+        console.log('slack-id not found')
+      }
+      resolve(user)
+      return user
+    })
+  })
+}
+
 let getSlackUserInfo = (slack_id) => {
-  console.log(slack_id);
   return new Promise((resolve, reject) => {
     request(
       { 
@@ -126,7 +157,7 @@ let getSlackUserInfo = (slack_id) => {
     )
     .on('data', (data) => {
       // decompressed data as it is received
-      console.log('decoded chunk: ' + data)
+      // console.log('decoded chunk: ' + data)
       resolve(JSON.parse(data))
     })
   })

@@ -31,8 +31,7 @@ service.post('/search', (req,res,next) => {
   let user_slack_id = data.originalRequest.data.event.user
 
   getResponse(action, null, user_slack_id).then((response) => {
-    return res.json({speech: response, source: "mio-service"})
-    //return res.json({speech: "I cannot reply to this yet "+response+". It's really just dummy data :angel: \n", source: "mio-service"})
+    return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
   })
 })
 
@@ -69,14 +68,8 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
-      //if known user, say "Hi Joakim! welcome back", else, instructions
-      return new Promise((resolve, reject)=>{
-        actions.identify(param1).then((user)=>{
-          actions.hello(user).then((response) => {
-            resolve(response)
-          })
-        })
-      })
+      //if new user, give introduction, otherwise continue on current context
+      return getIntro(action, context, param1, param2)
       break
     case 'identify_user':
       console.log('identify user')
@@ -84,7 +77,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'location_search':
       //user searched for office
-      console.log('searched again via text')
+      console.log('searched location via text')
       //doResponse with current context and action:next
       break
     case 'relevance_ask':
@@ -93,6 +86,16 @@ let getResponse = (action, context, param1=null, param2=null) => {
     default:
       console.log('no action value found')
   }
+}
+
+let getIntro = (action, context, param1) => {
+  return new Promise((resolve, reject)=>{
+    actions.identify(param1).then((user)=>{
+      actions.intro(user).then((response) => {
+        resolve(response)
+      })
+    })
+  })
 }
 
 
