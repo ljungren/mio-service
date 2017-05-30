@@ -1,7 +1,9 @@
 module.exports = {
-  unknown: "Welcome, friend! My name is Mio. I can help you find a place that's relevant to your company, by social terms, so that you can find an optimal place to extend your connections and base your operations. I am not as intelligent as you, but I can learn about your company and discuss your thoughts about my suggestions. You can start by briefly explaining to me what it is your company does.",
-  known: (username=null, context=null) => {
-    return "Hello"+(username ? " " + capFirst(username) : "")+", have you contacted"+(context ? " " + getName(context) : "")+" yet? or would you like to continue looking for an office?"
+  unknown: (name=null) => {
+    return "Welcome,"+(name ? " " + capFirst(name) : " friend")+"! My name is Mio. I was made as a thesis experiment to see if corporate ambitions of profit and user experience can be aligned with ambitions of sustainable development. I can help software companies like you to find office space that's relevant to your specific company, in terms of social connections, so that you can find an optimal environment to extend your network and base your operations. To strive towards sustainability goals, I prioritize locations in less urban areas. As of know, my suggestions are static, but I pretend to consume data from multiple social networks and geographical open data to find custom locations for you. I am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions.\n\nYou can start by briefly explaining to me what it is your company does."
+  },
+  known: (name=null, context=null) => {
+    return "What's up"+(name ? " " + capFirst(name) : "")+"? have you contacted"+(context ? " " + getName(context) : " an office")+" yet? or would you like to continue looking for an office?"
   }
 }
 
