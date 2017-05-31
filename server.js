@@ -23,22 +23,40 @@ service.get('/', (req,res,next) => {
 
 
 // INVOKE WITH: api.ai webhook (test: "dinosaur")
-service.post('/search', (req,res,next) => {
+service.post('/message', (req,res,next) => {
 
-  // (print request) console.log('data:'+ JSON.stringify(req.body));
-  let data = req.body
-  let action = data.result.action
-  let user_slack_id = data.originalRequest.data.event.user
+  console.log('data:'+ JSON.stringify(req.body));
 
-  getResponse(action, null, user_slack_id).then((response) => {
-    return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
-  })
+  // identify request origin
+  if('challenge' in req.body){
+    // slack authentication
+    console.log('slack authentication')
+    return res.status(200).send(req.body.challenge)
+  }
+  else if('originalRequest' in req.body){
+    console.log('webhook request from api.ai');
+    // do getResponse like usual, but respond to slack instead of through api.ai
+    //get params
+    let data = req.body
+    let action = data.result.action
+    let user_slack_id = data.originalRequest.data.event.user
+
+    getResponse(action, null, user_slack_id).then((response) => {
+      // return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+      return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
+    })
+  }
+  else{
+    console.log('request directly from slack');
+    //extract events and do something, redirect to api.ai for intent classification
+    return res.status(200).send('temp')
+  }
 })
 
 // INVOKE WITH: message buttons
 service.post('/interaction', (req,res,next) => {
 
-  // (print request) console.log('payload:'+ JSON.stringify(req.body.payload));
+  // console.log('payload:'+ JSON.stringify(req.body.payload));
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
@@ -64,12 +82,13 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'next':
       console.log('new search requested')
+      // getResponse('location_search', context, param1)
       return actions.showNext(context)
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
       //if new user, give introduction, otherwise continue on current context
-      return getIntro(action, context, param1, param2)
+      return getIntro(action, context, param1)
       break
     case 'identify_user':
       console.log('identify user')
@@ -77,14 +96,15 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'location_search':
       //user searched for office
-      console.log('searched location via text')
-      //doResponse with current context and action:next
+      console.log('searched location')
+      return actions.showNext(context)
       break
     case 'relevance_ask':
       console.log('relevance was asked')
       break
     default:
-      console.log('no action value found')
+      console.log('no specific action, calling api.ai')
+      //return callApiAi()
   }
 }
 
@@ -110,9 +130,9 @@ const server = service.listen((process.env.PORT || 9000), () => {
   //set up alive messaging
   setInterval(() => {
     request('https://mio-service.herokuapp.com/', function (error, response, body) {
-      console.log('alive_error: ' + error);
-      console.log('alive_status_code: ' + response && response.statusCode);
-      console.log('alive_message: ' + body);
+      console.log('alive error: ' + error);
+      console.log('alive status: ' + response && response.statusCode);
+      console.log('self-invoked alive: ' + body);
     })
   }, 1200000)
 

@@ -97,7 +97,7 @@ module.exports = {
   },
   intro: (user) => {
     return new Promise((resolve, reject) => {
-      console.log('sending response');
+      console.log('sending response')
       resolve((user.user_current_context===null || user.user_current_context===undefined) ? greeting.unknown(user.user_name) : greeting.known(user.user_name, user.user_current_context))
 
     }).catch((err) => {
