@@ -7,7 +7,8 @@ const express  = require('express'),
   request = require('request'),
   apiai = require('apiai'),
   pg = require('pg'),
-  actions = require('./actions/actions.js')
+  actions = require('./actions/actions.js'),
+  config = require('./config.js')
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -26,7 +27,7 @@ service.get('/', (req,res,next) => {
 // INVOKE WITH: api.ai webhook (test: "dinosaur")
 service.post('/message', (req,res,next) => {
 
-  console.log('data:'+ JSON.stringify(req.body));
+  console.log('data:'+ req.body);
   let data = req.body
 
   // identify request origin getOrigin()
@@ -34,7 +35,17 @@ service.post('/message', (req,res,next) => {
     console.log('slack authentication')
     return res.status(200).send(req.body.challenge)
   }
-  else if('originalRequest' in data){
+  else if('token' in data && data.token===config.slack_event_token){
+    console.log('post from slack, event type: '+data.event.type)
+    //extract events and do something
+
+    //send req to to api.ai for intent classification.
+    submitMessage(data).then((response)=> {
+      return res.status('200').send(response)
+    })
+  }
+  // else if('originalRequest' in data){
+  else{
     console.log('webhook request from api.ai');
     // do getResponse like usual, but respond to slack instead of through api.ai
     //get params
@@ -46,18 +57,9 @@ service.post('/message', (req,res,next) => {
       // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
     })
   }
-  else if('token' in data && data.token==='Km6EFip0qXDXycvmot5WSTJX'){
-    console.log('post from slack, event type: '+data.event.type)
-    //extract events and do something, redirect to api.ai for intent classification. getEvent()
-
-    //send req to api.ai...
-    submitMessage(data).then((response)=> {
-      return res.status(200).send(response)
-    })
-  }
-  else{
-    console.log('request came from api.ai??');
-  }
+  // else{
+  //   console.log('request came from api.ai??');
+  // }
 })
 
 
@@ -66,37 +68,20 @@ let submitMessage = (data) => {
  
     let ai = apiai("33e3ab5ee3c546ec9e071305797b4b60");
      
-    let aireq = ai.textRequest('hello', {
+    let aireq = ai.textRequest(data.text, {
         sessionId: 'ea5f7a06-8910-4b67-b83b-8eb8de7db11f'
     });
      
-    aireq.on('response', function(response) {
+    aireq.on('response', (response) => {
         console.log(response);
         resolve(response)
     });
      
-    aireq.on('error', function(error) {
-        console.log(error);
+    aireq.on('error', (error) => {
+        console.log('ERROR: '+error);
     });
      
     aireq.end();
-
-    // request.post(
-    //   { 
-    //     url: 'https://bots.api.ai/slack/39131e37-b37a-46e8-a235-3ea210ef0e0d/webhook',
-    //     formData: JSON.stringify(data)
-    //   }, (err, response, body) => {
-    //     if (err) {
-    //       return console.error('upload failed:', err);
-    //     }
-    //     console.log('Upload successful!  Server responded with:', body);
-    //   }
-    // )
-    // .on('data', (data) => {
-    //   // decompressed data as it is received
-    //   console.log('decoded chunk: ' + data)
-    //   resolve(JSON.parse(data))
-    // })
   })
 }
 
