@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/ljungren/mio-service#readme",
   "dependencies": {
+    "apiai": "^4.0.2",
     "body-parser": "^1.17.1",
     "express": "^4.15.2",
     "pg": "6.2.3",

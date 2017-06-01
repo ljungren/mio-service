@@ -43,6 +43,9 @@ module.exports = {
       })
     })
   },
+  getPreference: () => {
+    console.log('return preferences');
+  },
   updatePreference: (user_slack_id, user_company_domain, user_company_type=null, user_company_location=null, user_company_size=null, user_office_prize=null) => {
     console.log('update user details');
     return new Promise((resolve, reject) => {
