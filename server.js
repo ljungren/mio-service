@@ -5,6 +5,7 @@ const express  = require('express'),
   bodyParser = require('body-parser'),
   service = express(),
   request = require('request'),
+  apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js')
 
@@ -26,32 +27,79 @@ service.get('/', (req,res,next) => {
 service.post('/message', (req,res,next) => {
 
   console.log('data:'+ JSON.stringify(req.body));
+  let data = req.body
 
-  // identify request origin
-  if('challenge' in req.body){
-    // slack authentication
+  // identify request origin getOrigin()
+  if('challenge' in data){
     console.log('slack authentication')
     return res.status(200).send(req.body.challenge)
   }
-  else if('originalRequest' in req.body){
+  else if('originalRequest' in data){
     console.log('webhook request from api.ai');
     // do getResponse like usual, but respond to slack instead of through api.ai
     //get params
-    let data = req.body
     let action = data.result.action
     let user_slack_id = data.originalRequest.data.event.user
 
     getResponse(action, null, user_slack_id).then((response) => {
-      // return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
-      return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
+      return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+      // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
+    })
+  }
+  else if('token' in data && data.token==='Km6EFip0qXDXycvmot5WSTJX'){
+    console.log('post from slack, event type: '+data.event.type)
+    //extract events and do something, redirect to api.ai for intent classification. getEvent()
+
+    //send req to api.ai...
+    submitMessage(data).then((response)=> {
+      return res.status(200).send(response)
     })
   }
   else{
-    console.log('request directly from slack');
-    //extract events and do something, redirect to api.ai for intent classification
-    return res.status(200).send('temp')
+    console.log('request came from api.ai??');
   }
 })
+
+
+let submitMessage = (data) => {
+  return new Promise((resolve, reject) => {
+ 
+    let ai = apiai("33e3ab5ee3c546ec9e071305797b4b60");
+     
+    let aireq = ai.textRequest('hello', {
+        sessionId: 'ea5f7a06-8910-4b67-b83b-8eb8de7db11f'
+    });
+     
+    aireq.on('response', function(response) {
+        console.log(response);
+        resolve(response)
+    });
+     
+    aireq.on('error', function(error) {
+        console.log(error);
+    });
+     
+    aireq.end();
+
+    // request.post(
+    //   { 
+    //     url: 'https://bots.api.ai/slack/39131e37-b37a-46e8-a235-3ea210ef0e0d/webhook',
+    //     formData: JSON.stringify(data)
+    //   }, (err, response, body) => {
+    //     if (err) {
+    //       return console.error('upload failed:', err);
+    //     }
+    //     console.log('Upload successful!  Server responded with:', body);
+    //   }
+    // )
+    // .on('data', (data) => {
+    //   // decompressed data as it is received
+    //   console.log('decoded chunk: ' + data)
+    //   resolve(JSON.parse(data))
+    // })
+  })
+}
+
 
 // INVOKE WITH: message buttons
 service.post('/interaction', (req,res,next) => {
@@ -68,7 +116,8 @@ service.post('/interaction', (req,res,next) => {
   return res.status(200).send(response)
 })
 
-//functions
+
+
 
 let getResponse = (action, context, param1=null, param2=null) => {
     switch(action){
@@ -129,12 +178,12 @@ const server = service.listen((process.env.PORT || 9000), () => {
 
   //set up alive messaging
   setInterval(() => {
-    request('https://mio-service.herokuapp.com/', function (error, response, body) {
-      console.log('alive error: ' + error);
-      console.log('alive status: ' + response && response.statusCode);
-      console.log('self-invoked alive: ' + body);
+    request('https://mio-service.herokuapp.com/', (error, response, body) => {
+      if(error) 
+        console.log('alive error: ' + error);
+
+      console.log('self-invoked alive: ' + body + ', status: ' + response.statusCode);
     })
   }, 1200000)
-
 })
 
