@@ -1,4 +1,4 @@
-'use strict';
+'use strict'
 
 //import modules
 const express  = require('express'),
@@ -24,10 +24,10 @@ service.get('/', (req,res,next) => {
 })
 
 
-// INVOKE WITH: api.ai webhook (test: "dinosaur")
+
 service.post('/message', (req,res,next) => {
 
-  console.log('data:'+ req.body);
+  console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
 
   // identify request origin getOrigin()
@@ -35,53 +35,81 @@ service.post('/message', (req,res,next) => {
     console.log('slack authentication')
     return res.status(200).send(req.body.challenge)
   }
-  else if('token' in data && data.token===config.slack_event_token){
+  else if('token' in data && data.token===config.slack.event_token){
     console.log('post from slack, event type: '+data.event.type)
-    //extract events and do something
+    //extract events and do something if not normal message
 
-    //send req to to api.ai for intent classification.
+    //send message as req to to api.ai for intent classification.
+    console.log('passing message to api.ai for intent classification');
     submitMessage(data).then((response)=> {
+      console.log('submitting response to slack');
       return res.status('200').send(response)
     })
   }
-  // else if('originalRequest' in data){
   else{
-    console.log('webhook request from api.ai');
-    // do getResponse like usual, but respond to slack instead of through api.ai
-    //get params
-    let action = data.result.action
-    let user_slack_id = data.originalRequest.data.event.user
-
-    getResponse(action, null, user_slack_id).then((response) => {
-      return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
-      // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
-    })
+    console.log('????????????????');
   }
-  // else{
-  //   console.log('request came from api.ai??');
-  // }
+})
+
+
+
+service.post('/webhook', (req,res,next) => {
+
+  let data = req.body
+
+  console.log('webhook fulfillment request from api.ai');
+  // do getResponse like usual, but respond to slack instead of through api.ai
+  //get params
+  let action = data.result.action
+  let user_slack_id = data.originalRequest.data.event.user
+
+  getResponse(action, null, user_slack_id).then((response) => {
+    return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+    // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
+  })
+
 })
 
 
 let submitMessage = (data) => {
   return new Promise((resolve, reject) => {
- 
-    let ai = apiai("33e3ab5ee3c546ec9e071305797b4b60");
-     
-    let aireq = ai.textRequest(data.text, {
-        sessionId: 'ea5f7a06-8910-4b67-b83b-8eb8de7db11f'
-    });
-     
-    aireq.on('response', (response) => {
-        console.log(response);
-        resolve(response)
-    });
-     
-    aireq.on('error', (error) => {
-        console.log('ERROR: '+error);
-    });
-     
-    aireq.end();
+
+    let requestData =  {
+      query: data.event.text, 
+      lang:'en',
+      // contexts:[
+      //   { 
+      //     name: 'weather', 
+      //     parameters: {
+      //       city: 'London'
+      //     }, 
+      //     lifespan: 4
+      //   }
+      // ], 
+      sessionId: data.event.user
+    }
+
+    request({
+      url: 'https://api.api.ai/v1/query?v=20150910',
+      method: "POST",
+      json: true,
+      headers: {
+          "authorization": 'Bearer '+config.apiai_access_token,
+          "content-type": "application/json; charset=utf-8"
+      },
+      body: requestData
+    },
+    (error, response, body) => {
+      if (error) {
+        return console.error('request failed:', error)
+      }
+      console.log('request successful!  Server responded with:', body)
+
+      //update current contexts, etc
+
+      //return slack response
+      resolve(body)
+    })
   })
 }
 
@@ -161,14 +189,16 @@ const server = service.listen((process.env.PORT || 9000), () => {
   // ssl in production
   pg.defaults.ssl = server.address().port===9000 ? false : true;
 
-  //set up alive messaging
-  setInterval(() => {
-    request('https://mio-service.herokuapp.com/', (error, response, body) => {
-      if(error) 
-        console.log('alive error: ' + error);
+  // alive message in prod
+  if(!(server.address().port===9000)){
+    setInterval(() => {
+      request('https://mio-service.herokuapp.com/', (error, response, body) => {
+        if(error) 
+          console.log('alive error: ' + error);
 
-      console.log('self-invoked alive: ' + body + ', status: ' + response.statusCode);
-    })
-  }, 1200000)
+        console.log('self-invoked alive: ' + body + ', status: ' + response.statusCode);
+      })
+    }, 1200000)
+  }
 })
 

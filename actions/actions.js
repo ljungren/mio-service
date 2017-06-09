@@ -1,3 +1,5 @@
+'use strict'
+
 //inport modules
 const db = require('./db.js'),
 request = require('request'),
@@ -139,7 +141,7 @@ let addUserName = (user, slack_id) => {
         }
       }
       else{
-        console.log('slack-id not found')
+        console.log('slack_id not found')
       }
       resolve(user)
       return user
@@ -152,7 +154,7 @@ let getSlackUserInfo = (slack_id) => {
     request(
       { 
         method: 'GET',
-        uri: 'https://slack.com/api/users.info?token='+config.slack_token+'&user='+slack_id
+        uri: 'https://slack.com/api/users.info?token='+config.slack.web_token+'&user='+slack_id
       }
     )
     .on('data', (data) => {
