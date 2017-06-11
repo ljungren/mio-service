@@ -43,8 +43,11 @@ service.post('/message', (req,res,next) => {
     console.log('passing message to api.ai for intent classification');
     submitMessage(data).then((response)=> {
       console.log('submitting response to slack');
-      console.log('response: '+response);
-      return res.status('200').send(response)
+      let res = {
+        text:response
+      }
+      // console.log('response: '+response);
+      return res.status('200').send(res)
     })
   }
   else{
@@ -90,7 +93,7 @@ let submitMessage = (data) => {
       if (error) {
         return console.error('request failed:', error)
       }
-      console.log('request successful!  Server responded with:', body)
+      // console.log('request successful!  Server responded with:', body)
 
       //update current contexts, etc
 
@@ -107,8 +110,8 @@ service.post('/webhook', (req,res,next) => {
   let data = req.body
 
   console.log('webhook fulfillment request from api.ai')
-  console.log('webhook req.body: '+JSON.stringify(req.body))
-  // do getResponse like usual, but respond to slack instead of through api.ai
+  // console.log('webhook req.body: '+JSON.stringify(req.body))
+
   //get params
   let action = data.result.action
   let user_slack_id = data.sessionId
