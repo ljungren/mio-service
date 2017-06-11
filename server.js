@@ -59,6 +59,11 @@ let submitMessage = (data) => {
     let requestData =  {
       query: data.event.text, 
       lang:'en',
+      originalRequest:
+      {
+        source:"slack", 
+        data: data
+      },
       sessionId: data.event.user
     }
       // contexts:[
@@ -106,7 +111,7 @@ service.post('/webhook', (req,res,next) => {
   // do getResponse like usual, but respond to slack instead of through api.ai
   //get params
   let action = data.result.action
-  let user_slack_id = data.originalRequest.data.event.user
+  let user_slack_id = data.sessionId
 
   getResponse(action, null, user_slack_id).then((response) => {
     return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
