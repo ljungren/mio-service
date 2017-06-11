@@ -43,11 +43,11 @@ service.post('/message', (req,res,next) => {
     console.log('passing message to api.ai for intent classification');
     submitMessage(data).then((response)=> {
       console.log('submitting response to slack');
-      let res = {
+      let slackResponse = {
         text:response
       }
       // console.log('response: '+response);
-      return res.status('200').send(res)
+      return res.status('200').send(JSON.stringify(slackResponse))
     })
   }
   else{
