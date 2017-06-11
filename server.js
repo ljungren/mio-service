@@ -24,13 +24,13 @@ service.get('/', (req,res,next) => {
 })
 
 
-
+//INVOKES FROM SLACK MESSAGE
 service.post('/message', (req,res,next) => {
 
-  console.log('data:'+ JSON.stringify(req.body))
+  //console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
 
-  // identify request origin getOrigin()
+  // identify request origin
   if('challenge' in data){
     console.log('slack authentication')
     return res.status(200).send(req.body.challenge)
@@ -43,6 +43,7 @@ service.post('/message', (req,res,next) => {
     console.log('passing message to api.ai for intent classification');
     submitMessage(data).then((response)=> {
       console.log('submitting response to slack');
+      console.log('response: '+response);
       return res.status('200').send(response)
     })
   }
@@ -52,31 +53,14 @@ service.post('/message', (req,res,next) => {
 })
 
 
-
-service.post('/webhook', (req,res,next) => {
-
-  let data = req.body
-
-  console.log('webhook fulfillment request from api.ai');
-  // do getResponse like usual, but respond to slack instead of through api.ai
-  //get params
-  let action = data.result.action
-  let user_slack_id = data.originalRequest.data.event.user
-
-  getResponse(action, null, user_slack_id).then((response) => {
-    return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
-    // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
-  })
-
-})
-
-
 let submitMessage = (data) => {
   return new Promise((resolve, reject) => {
 
     let requestData =  {
       query: data.event.text, 
       lang:'en',
+      sessionId: data.event.user
+    }
       // contexts:[
       //   { 
       //     name: 'weather', 
@@ -86,8 +70,6 @@ let submitMessage = (data) => {
       //     lifespan: 4
       //   }
       // ], 
-      sessionId: data.event.user
-    }
 
     request({
       url: 'https://api.api.ai/v1/query?v=20150910',
@@ -108,13 +90,33 @@ let submitMessage = (data) => {
       //update current contexts, etc
 
       //return slack response
-      resolve(body)
+      resolve(body.result.fulfillment.speech)
     })
   })
 }
 
 
-// INVOKE WITH: message buttons
+// INVOKES FROM: api.ai fulfillment intent
+service.post('/webhook', (req,res,next) => {
+
+  let data = req.body
+
+  console.log('webhook fulfillment request from api.ai')
+  console.log('webhook req.body: '+JSON.stringify(req.body))
+  // do getResponse like usual, but respond to slack instead of through api.ai
+  //get params
+  let action = data.result.action
+  let user_slack_id = data.originalRequest.data.event.user
+
+  getResponse(action, null, user_slack_id).then((response) => {
+    return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+    // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
+  })
+
+})
+
+
+// INVOKES FROM: message buttons
 service.post('/interaction', (req,res,next) => {
 
   // console.log('payload:'+ JSON.stringify(req.body.payload));
