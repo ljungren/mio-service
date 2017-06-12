@@ -53,7 +53,6 @@ module.exports = {
           }
           else{
             console.log('status code: '+body.status.code+': '+body.status.errorDetails);
-            resolve('sorry, something went wrong with processing your query')
           }
         }
       })

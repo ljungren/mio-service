@@ -24,7 +24,6 @@ service.get('/', (req,res,next) => {
   return res.status(200).send('api available')
 })
 
-
 //INVOKES FROM SLACK MESSAGE
 service.post('/message', (req,res,next) => {
 
@@ -59,7 +58,6 @@ service.post('/message', (req,res,next) => {
   else{
     res.status('400').send('Bad request')
   }
-
 })
 
 
