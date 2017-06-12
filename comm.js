@@ -42,7 +42,7 @@ module.exports = {
           return console.error('request to api.ai failed:', error)
         }
         else if(body){
-          if(body.status.code==='200'){
+          if(body.status.code===200){
             console.log('request to api.ai successful!')
             console.log('api.ai server responded with:', body)
             //update current contexts, etc
