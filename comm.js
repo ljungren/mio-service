@@ -43,7 +43,7 @@ module.exports = {
         }
         else if(body){
           console.log('request to api.ai successful!')
-          // console.log('api.ai server responded with:', body)
+          console.log('api.ai server responded with:', body)
           //update current contexts, etc
 
           //return slack response
@@ -63,7 +63,7 @@ module.exports = {
       if (err) {
         console.log('Error:', err)
       } else {
-        console.log('Message sent: ', res.ok ? 'ok' : 'warning')
+        console.log('Message recieved '+ res.ok ? 'ok' : 'with warning')
       }
     })
   }
