@@ -76,16 +76,18 @@ service.post('/webhook', (req,res,next) => {
   let action = data.result.action
   let user_slack_id = data.sessionId
 
-  //check if getresponse has a .then() property
-  let isPromise = getResponse(action, null, user_slack_id).hasOwnProperty('then')
-  console.log('is promise? ' + isPromise)
-  
-  if(isPromise){
-    getResponse(action, null, user_slack_id).then((response) => {
+  let obj = getResponse(action, null, user_slack_id)
+
+  if(obj instanceof Promise){
+    obj.then((response) => {
       return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
       // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
     })
   }
+  else{
+    return obj ? res.json({speech: obj, source: "mio-service"}) : obj.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+  }
+
 })
 
 
