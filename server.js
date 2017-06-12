@@ -41,6 +41,7 @@ service.post('/message', (req,res,next) => {
     res.status('200').send()
 
     console.log('post from slack, event type: '+data.event.type)
+    console.log('data: '+JSON.stringify(data))
     //extract events and do something if not normal message
 
     //send message as req to to api.ai for intent classification.
