@@ -44,7 +44,8 @@ module.exports = {
         else if(body){
           if(body.status.code===200){
             console.log('request to api.ai successful!')
-            console.log('api.ai server responded with:', body)
+            // console.log('api.ai server responded with:', body)
+            
             //update current contexts, etc
 
             //return slack response
