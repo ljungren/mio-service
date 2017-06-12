@@ -62,7 +62,8 @@ service.post('/message', (req,res,next) => {
 })
 
 
-// INVOKES FROM: api.ai, intent fulfillment
+
+// INVOKES FROM API.AI INTENT FULFILLMENT
 service.post('/webhook', (req,res,next) => {
 
   let data = req.body
@@ -82,7 +83,7 @@ service.post('/webhook', (req,res,next) => {
 })
 
 
-// INVOKES FROM: message buttons
+// INVOKES FROM INTERACTIVE MESSAGE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
   // console.log('payload:'+ JSON.stringify(req.body.payload));
@@ -99,7 +100,7 @@ service.post('/interaction', (req,res,next) => {
 
 
 
-
+//get response or action based on custom events
 let getResponse = (action, context, param1=null, param2=null) => {
     switch(action){
     case 'contact':

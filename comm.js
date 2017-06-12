@@ -1,4 +1,5 @@
-const request = require('request'),
+const WebClient = require('@slack/client').WebClient,
+request = require('request'),
 config = require('./config.js')
 
 module.exports = {
@@ -57,28 +58,13 @@ module.exports = {
     // console.log('text: '+text)
     // console.log('initialReq: '+JSON.stringify(initialReq))
 
-    let slackMessage = {
-      token: config.slack.web_token,
-      channel: initialReq.event.channel,
-      text: text
-    }
-    request({
-      url: 'https://slack.com/api/chat.postMessage',
-      method: "POST",
-      json: true,
-      headers: {
-          "content-type": "application/json; charset=utf-8"
-      },
-      body: slackMessage
-    },
-    (error, response, body) => {
-      if (error) {
-        return console.error('chat.postMessage failed:', error)
+    let web = new WebClient(config.slack.web_token)
+    web.chat.postMessage(initialReq.event.channel, text, (err, res) => {
+      if (err) {
+        console.log('Error:', err)
+      } else {
+        console.log('Message sent: ', res.ok ? 'ok' : 'warning')
       }
-      else if(body){
-        return console.log('chat.postMessage: '+JSON.stringify(body))
-      }
-      
     })
   }
 }
