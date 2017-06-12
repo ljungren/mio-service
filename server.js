@@ -5,9 +5,10 @@ const express  = require('express'),
   bodyParser = require('body-parser'),
   service = express(),
   request = require('request'),
-  apiai = require('apiai'),
+  // apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js'),
+  comm = require('./comm.js'),
   config = require('./config.js')
 
 //middleware
@@ -36,75 +37,32 @@ service.post('/message', (req,res,next) => {
     return res.status(200).send(req.body.challenge)
   }
   else if('token' in data && data.token===config.slack.event_token){
+    //event call is ok
+    res.status('200').send()
+
     console.log('post from slack, event type: '+data.event.type)
     //extract events and do something if not normal message
 
     //send message as req to to api.ai for intent classification.
     console.log('passing message to api.ai for intent classification');
-    submitMessage(data).then((response)=> {
-      console.log('submitting response to slack');
-      let slackResponse = {
-        text:response
-      }
+    comm.intentClassification(data).then((response)=> {
       // console.log('response: '+response);
-      return res.status('200').send(slackResponse)
+
+      console.log('sending api.ai response to slack');
+      comm.submitMessage(response, data)
     })
   }
-  else{
-    console.log('????????????????');
+  else if(!('token' in data || data.token===config.slack.event_token)){
+    res.status('401').send('Unauthorized request')
   }
+  else{
+    res.status('400').send('Bad request')
+  }
+
 })
 
 
-let submitMessage = (data) => {
-  return new Promise((resolve, reject) => {
-
-    let requestData =  {
-      query: data.event.text, 
-      lang:'en',
-      originalRequest:
-      {
-        source:"slack", 
-        data: data
-      },
-      sessionId: data.event.user
-    }
-      // contexts:[
-      //   { 
-      //     name: 'weather', 
-      //     parameters: {
-      //       city: 'London'
-      //     }, 
-      //     lifespan: 4
-      //   }
-      // ], 
-
-    request({
-      url: 'https://api.api.ai/v1/query?v=20150910',
-      method: "POST",
-      json: true,
-      headers: {
-          "authorization": 'Bearer '+config.apiai_access_token,
-          "content-type": "application/json; charset=utf-8"
-      },
-      body: requestData
-    },
-    (error, response, body) => {
-      if (error) {
-        return console.error('request failed:', error)
-      }
-      // console.log('request successful!  Server responded with:', body)
-
-      //update current contexts, etc
-
-      //return slack response
-      resolve(body.result.fulfillment.speech)
-    })
-  })
-}
-
-
-// INVOKES FROM: api.ai fulfillment intent
+// INVOKES FROM: api.ai, intent fulfillment
 service.post('/webhook', (req,res,next) => {
 
   let data = req.body
@@ -189,6 +147,8 @@ let getIntro = (action, context, param1) => {
     })
   })
 }
+
+
 
 
 //start Server
