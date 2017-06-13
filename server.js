@@ -6,6 +6,7 @@ const express  = require('express'),
   service = express(),
   request = require('request'),
   RtmClient = require('@slack/client').RtmClient,
+  RTM_EVENTS = require('@slack/client').RTM_EVENTS;
   // apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js'),
@@ -43,7 +44,7 @@ service.post('/message', (req,res,next) => {
     var rtm = new RtmClient(config.slack.bot_token)
     rtm.start()
     // you need to wait for the client to fully connect before you can send messages
-    rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
+    rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
       rtm.sendTyping(data.event.channel)
       // rtm._send({id: 1,
       //   type: "typing",
@@ -52,7 +53,8 @@ service.post('/message', (req,res,next) => {
     })   
 
     console.log('post from slack, event type: '+data.event.type)
-    console.log('data: '+JSON.stringify(data))
+    // console.log('data: '+JSON.stringify(data))
+
     //extract events and do something if not normal message
 
     //send message as req to to api.ai for intent classification.
