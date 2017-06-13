@@ -41,16 +41,17 @@ service.post('/message', (req,res,next) => {
     //event call is ok
     res.status('200').send()
 
-    var rtm = new RtmClient(config.slack.bot_token)
-    rtm.start()
-    // you need to wait for the client to fully connect before you can send messages
-    rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
-      rtm.sendTyping(data.event.channel)
-      // rtm._send({id: 1,
-      //   type: "typing",
-      //   channel: "CHANNEL_ID"
-      // })
-    })   
+    // var rtm = new RtmClient(config.slack.bot_token)
+    // rtm.start()
+    // // you need to wait for the client to fully connect before you can send messages
+    // rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
+    //   rtm.sendTyping(data.event.channel)
+    //   // rtm._send({
+    //   //   id: 1,
+    //   //   type: "typing",
+    //   //   channel: "CHANNEL_ID"
+    //   // })
+    // })   
 
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
