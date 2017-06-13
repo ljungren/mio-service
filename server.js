@@ -5,6 +5,7 @@ const express  = require('express'),
   bodyParser = require('body-parser'),
   service = express(),
   request = require('request'),
+  RtmClient = require('@slack/client').RtmClient,
   // apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js'),
@@ -38,6 +39,17 @@ service.post('/message', (req,res,next) => {
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
     res.status('200').send()
+
+    var rtm = new RtmClient(config.slack.bot_token)
+    rtm.start()
+    // you need to wait for the client to fully connect before you can send messages
+    rtm.on(RTM_CLIENT_EVENTS.RTM_CONNECTION_OPENED, () => {
+      rtm.sendTyping(data.event.channel)
+      // rtm._send({id: 1,
+      //   type: "typing",
+      //   channel: "CHANNEL_ID"
+      // })
+    })   
 
     console.log('post from slack, event type: '+data.event.type)
     console.log('data: '+JSON.stringify(data))
