@@ -2,6 +2,6 @@ node_modules
 npm-debug.log
 queries.sql
 api_ai_post.json
-slack_post.json
+slack_interactive_post.json
 slack_message_post.json
 config.js
