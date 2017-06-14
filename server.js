@@ -3,7 +3,7 @@
 //import modules
 const express  = require('express'),
   bodyParser = require('body-parser'),
-  service = express(),
+  helmet = require('helmet'),
   request = require('request'),
   RtmClient = require('@slack/client').RtmClient,
   RTM_EVENTS = require('@slack/client').RTM_EVENTS,
@@ -13,9 +13,12 @@ const express  = require('express'),
   comm = require('./comm.js'),
   config = require('./config.js')
 
+const service = express()
+
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
 service.use(bodyParser.json())
+service.use(helmet())
 service.use((req, res, next) => {
   console.log(req.method, req.url)
   next()
@@ -29,7 +32,7 @@ service.get('/', (req,res,next) => {
 //INVOKES FROM SLACK MESSAGE
 service.post('/message', (req,res,next) => {
 
-  //console.log('data:'+ JSON.stringify(req.body))
+  console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
 
   // identify request origin
@@ -93,12 +96,13 @@ service.post('/webhook', (req,res,next) => {
 
   if(obj instanceof Promise){
     obj.then((response) => {
-      return response ? res.json({speech: response, source: "mio-service"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+      return response ? res.json({speech: response, source: "slack"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "slack"})
       // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
     })
   }
   else{
-    return obj ? res.json({speech: obj, source: "mio-service"}) : obj.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "mio-service"})
+    console.log('sending suggestion: '+obj);
+    return res.status('200').send(obj)
   }
 
 })
@@ -188,7 +192,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
         if(error) 
           console.log('alive error: ' + error);
 
-        console.log('self-invoked alive: ' + body + ', status: ' + response.statusCode);
+        console.log('self-invoked ALIVE: ' + body + ', status: ' + response.statusCode);
       })
     }, 1200000)
   }

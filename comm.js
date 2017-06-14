@@ -49,10 +49,11 @@ module.exports = {
             //update current contexts, etc
 
             //return slack response
+            // if rich message() retrun the whole thing?
             resolve(body.result.fulfillment.speech)
           }
           else{
-            console.log('status code: '+body.status.code+': '+body.status.errorDetails);
+            return console.log('status code: '+body.status.code+': '+body.status.errorDetails);
           }
         }
       })
