@@ -32,7 +32,7 @@ service.get('/', (req,res,next) => {
 //INVOKES FROM SLACK MESSAGE
 service.post('/message', (req,res,next) => {
 
-  console.log('data:'+ JSON.stringify(req.body))
+  // console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
 
   // identify request origin
@@ -52,7 +52,7 @@ service.post('/message', (req,res,next) => {
     //send message as req to to api.ai for intent classification.
     console.log('passing message to api.ai for intent classification');
     comm.intentClassification(data).then((response)=> {
-      console.log('intentClassification response: '+response)
+      // console.log('intentClassification response: '+response)
       if(!(response===null || response===undefined)){
         console.log('sending api.ai response to slack')
         comm.submitMessage(response, data.event.channel)  
@@ -90,11 +90,11 @@ service.post('/webhook', (req,res,next) => {
   }
   else{
     //if not promise, it's a rich message. Send directly to slack client
-    console.log('sending office suggestion: '+obj)
-    comm.submitRichMessage(obj, data.originalRequest.data.event.channel)
-
-    //return empty response to api.ai
-    return res.status('200').send("")
+    console.log('sending office suggestion')
+    comm.submitRichMessage(obj, data.originalRequest.data.event.channel).then((ok) => {
+      //return fulfillment response to api.ai
+      return res.json({speech: 'what do you think?', source: "slack"})
+    })
   }
 
 })

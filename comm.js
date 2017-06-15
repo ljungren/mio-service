@@ -64,7 +64,7 @@ module.exports = {
     // console.log('text: '+text)
     // console.log('initialReq: '+JSON.stringify(initialReq))
 
-    let web = new WebClient(config.slack.web_token)
+    let web = new WebClient(config.slack.bot_token)
     web.chat.postMessage(channel, text, (err, res) => {
       if (err) {
         console.log('Error:', err)
@@ -73,19 +73,19 @@ module.exports = {
       }
     })
   },
-  submitRichMessage: (json, channel) => {
+  submitRichMessage: (obj, channel) => {
     //send message to slack
 
-    // console.log('text: '+text)
-    // console.log('initialReq: '+JSON.stringify(initialReq))
-
-    let web = new WebClient(config.slack.web_token)
-    web.chat.postMessage(channel, json, (err, res) => {
-      if (err) {
-        console.log('Error:', err)
-      } else {
-        console.log('Message sent to slack, received:', res.ok ? 'ok' : 'with warning')
-      }
+    return new Promise((resolve, reject) => {
+      let web = new WebClient(config.slack.bot_token)
+      web.chat.postMessage(channel, '', { attachments: obj.attachments, as_user: true}, (err, res) => {
+        if (err) {
+          console.log('Error:', err)
+        } else {
+          console.log('Rich message sent to slack, received:', res.ok ? 'ok' : 'with warning')
+          resolve(res.ok)
+        }
+      })
     })
   }
 }
