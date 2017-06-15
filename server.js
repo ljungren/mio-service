@@ -69,9 +69,9 @@ service.post('/message', (req,res,next) => {
         // console.log('intentClassification response: '+response)
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
-          comm.submitMessage(response, data.event.channel).then((ok) => {
-            rtm.sendMessage('', data.event.channel)
-          })
+          // comm.submitMessage(response, data.event.channel).then((ok) => {
+          rtm.sendMessage(response, data.event.channel)
+          // })
         }
       })
     }
