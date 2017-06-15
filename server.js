@@ -21,7 +21,7 @@ var rtm = new RtmClient(config.slack.bot_token)
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   console.log('RTM connection opened')
 })
-
+rtm.start()
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -57,8 +57,10 @@ service.post('/message', (req,res,next) => {
     res.status(200).send()
 
     //send typing event
-    rtm.sendTyping(data.event.channel)
-    rtm.start()
+    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
+      rtm.sendTyping(data.event.channel)
+    })
+    
 
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
