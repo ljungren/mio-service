@@ -16,6 +16,10 @@ const express  = require('express'),
 // app
 const service = express()
 var rtm = new RtmClient(config.slack.bot_token)
+rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+  console.log(RTM connection opened);
+})
+rtm.start()
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -51,10 +55,7 @@ service.post('/message', (req,res,next) => {
     res.status(200).send()
 
     //send typing event
-    rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-      rtm.sendTyping(data.event.channel)
-    })
-    rtm.start()
+    rtm.sendTyping(data.event.channel)
 
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
@@ -69,9 +70,7 @@ service.post('/message', (req,res,next) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           comm.submitMessage(response, data.event.channel).then((ok) => {
-            rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-              rtm.sendMessage('', data.event.channel)
-            })
+            rtm.sendMessage('', data.event.channel)
           })
         }
       })
