@@ -37,7 +37,6 @@ module.exports = {
   },
   moreInfo: (context) => {
     //return object based on context
-    console.log('context: '+context);
     let res = {
       replace_original: false,
       text: ""
