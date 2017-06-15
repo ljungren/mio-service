@@ -7,10 +7,10 @@ config = require('../config.js')
 //import example data
 const btnRes = require('../data/contact-and-info.js'),
   greeting = require('../data/greeting.js'),
-  sliperiet = require('../data/sliperiet.json'),
-  northern = require('../data/northern.json'),
-  housebe = require('../data/housebe.json'),
-  lounge = require('../data/lounge.json')
+  sliperiet = require('../data/sliperiet.js'),
+  northern = require('../data/northern.js'),
+  housebe = require('../data/housebe.js'),
+  lounge = require('../data/lounge.js')
 
 module.exports = {
   contact: (context) => {
