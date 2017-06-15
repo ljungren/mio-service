@@ -6,7 +6,7 @@ const express  = require('express'),
   helmet = require('helmet'),
   request = require('request'),
   RtmClient = require('@slack/client').RtmClient,
-  RTM_EVENTS = require('@slack/client').RTM_EVENTS,
+  CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS,
   // apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js'),
@@ -42,7 +42,7 @@ service.post('/message', (req,res,next) => {
     return res.status(200).send(req.body.challenge)
   }
   else if(data.event.user==='U5BJM9N4E'){
-    console.log('ignoring bot message');
+    console.log('ignoring bot message')
     return res.status(202).send('Ignoring bot message')
   }
   else if('token' in data && data.token===config.slack.event_token){
@@ -50,13 +50,17 @@ service.post('/message', (req,res,next) => {
     res.status(200).send()
 
     //send typing event
-    rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
-      rtm._send({
-        id: 1,
-        type: "typing",
-        channel: data.event.channel
-      })
+    rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+      rtm.sendMessage("RTM test", data.event.channel)
     })
+
+    // rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
+    //   rtm._send({
+    //     id: 1,
+    //     type: "typing",
+    //     channel: data.event.channel
+    //   })
+    // })
     rtm.start()
 
     console.log('post from slack, event type: '+data.event.type)
@@ -121,7 +125,7 @@ service.post('/webhook', (req,res,next) => {
 // INVOKES FROM INTERACTIVE MESSAGE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
-  console.log('payload:'+ JSON.stringify(req.body.payload));
+  // console.log('payload:'+ JSON.stringify(req.body.payload));
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
