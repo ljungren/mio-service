@@ -44,18 +44,6 @@ service.post('/message', (req,res,next) => {
     //event call is ok
     res.status('200').send()
 
-    // var rtm = new RtmClient(config.slack.bot_token)
-    // rtm.start()
-    // // you need to wait for the client to fully connect before you can send messages
-    // rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
-    //   rtm.sendTyping(data.event.channel)
-    //   // rtm._send({
-    //   //   id: 1,
-    //   //   type: "typing",
-    //   //   channel: "CHANNEL_ID"
-    //   // })
-    // })   
-
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
 
@@ -64,10 +52,11 @@ service.post('/message', (req,res,next) => {
     //send message as req to to api.ai for intent classification.
     console.log('passing message to api.ai for intent classification');
     comm.intentClassification(data).then((response)=> {
-      // console.log('response: '+response);
-
-      console.log('sending api.ai response to slack');
-      comm.submitMessage(response, data)
+      console.log('intentClassification response: '+response)
+      if(!(response===null || response===undefined)){
+        console.log('sending api.ai response to slack')
+        comm.submitMessage(response, data.event.channel)  
+      }
     })
   }
   else if(!('token' in data || data.token===config.slack.event_token)){
@@ -97,12 +86,15 @@ service.post('/webhook', (req,res,next) => {
   if(obj instanceof Promise){
     obj.then((response) => {
       return response ? res.json({speech: response, source: "slack"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "slack"})
-      // return response ? res.status(200).send(response) : res.status(200).send("Sorry, either you ar an invalid user or I cannot reply to this yet :angel: \n")
     })
   }
   else{
-    console.log('sending suggestion: '+obj);
-    return res.status('200').send(obj)
+    //if not promise, it's a rich message. Send directly to slack client
+    console.log('sending office suggestion: '+obj)
+    comm.submitRichMessage(obj, data.originalRequest.data.event.channel)
+
+    //return empty response to api.ai
+    return res.status('200').send("")
   }
 
 })
