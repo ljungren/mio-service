@@ -41,10 +41,15 @@ service.post('/message', (req,res,next) => {
     console.log('slack authentication')
     return res.status(200).send(req.body.challenge)
   }
+  else if(data.event.user==='U5BJM9N4E'){
+    console.log('ignoring bot message');
+    return res.status(202).send('Ignoring bot message')
+  }
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
-    res.status('200').send()
+    res.status(200).send()
 
+    //send typing event
     rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
       rtm._send({
         id: 1,
@@ -73,10 +78,10 @@ service.post('/message', (req,res,next) => {
 
   }
   else if(!('token' in data || data.token===config.slack.event_token)){
-    res.status('401').send('Unauthorized request')
+    return res.status(401).send('Unauthorized request')
   }
   else{
-    res.status('400').send('Bad request')
+    return res.status(400).send('Bad request')
   }
 })
 
