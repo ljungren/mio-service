@@ -62,13 +62,16 @@ module.exports = {
   },
   submitMessage: (text, channel) => {
     //send normal message to slack
-    web.chat.postMessage(channel, text, { as_user: true, replace_original: false}, (err, res) => {
-      if (err) {
-        console.log('Error:', err)
-      } else {
-        console.log('Message sent to slack, received:', res.ok ? 'ok' : 'with warning')
-      }
-    })
+    return new Promise((resolve, reject) => {
+      web.chat.postMessage(channel, text, { as_user: true, replace_original: false}, (err, res) => {
+        if (err) {
+          console.log('Error:', err)
+        } else {
+          console.log('Message sent to slack, received:', res.ok ? 'ok' : 'with warning')
+          resolve(res.ok)
+        }
+      })
+    })      
   },
   submitRichMessage: (obj, channel) => {
     //send rich message to slack
