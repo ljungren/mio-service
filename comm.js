@@ -2,6 +2,8 @@ const WebClient = require('@slack/client').WebClient,
 request = require('request'),
 config = require('./config.js')
 
+let web = new WebClient(config.slack.bot_token)
+
 module.exports = {
 
   intentClassification: (data) => {
@@ -59,13 +61,8 @@ module.exports = {
     })
   },
   submitMessage: (text, channel) => {
-    //send message to slack
-
-    // console.log('text: '+text)
-    // console.log('initialReq: '+JSON.stringify(initialReq))
-
-    let web = new WebClient(config.slack.bot_token)
-    web.chat.postMessage(channel, text, (err, res) => {
+    //send normal message to slack
+    web.chat.postMessage(channel, text, { as_user: true, replace_original: false}, (err, res) => {
       if (err) {
         console.log('Error:', err)
       } else {
@@ -74,11 +71,9 @@ module.exports = {
     })
   },
   submitRichMessage: (obj, channel) => {
-    //send message to slack
-
+    //send rich message to slack
     return new Promise((resolve, reject) => {
-      let web = new WebClient(config.slack.bot_token)
-      web.chat.postMessage(channel, '', { attachments: obj.attachments, as_user: true}, (err, res) => {
+      web.chat.postMessage(channel, '', { attachments: obj.attachments, as_user: true, replace_original: false}, (err, res) => {
         if (err) {
           console.log('Error:', err)
         } else {

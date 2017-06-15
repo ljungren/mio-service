@@ -14,6 +14,7 @@ const express  = require('express'),
   config = require('./config.js')
 
 const service = express()
+var rtm = new RtmClient(config.slack.bot_token)
 
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
@@ -44,20 +45,32 @@ service.post('/message', (req,res,next) => {
     //event call is ok
     res.status('200').send()
 
+    rtm.on(RTM_EVENTS.RTM_CONNECTION_OPENED, () => {
+      rtm._send({
+        id: 1,
+        type: "typing",
+        channel: data.event.channel
+      })
+    })
+    rtm.start()
+
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
 
     //extract events and do something if not normal message
 
-    //send message as req to to api.ai for intent classification.
-    console.log('passing message to api.ai for intent classification');
-    comm.intentClassification(data).then((response)=> {
-      // console.log('intentClassification response: '+response)
-      if(!(response===null || response===undefined)){
-        console.log('sending api.ai response to slack')
-        comm.submitMessage(response, data.event.channel)  
-      }
-    })
+    if(data.event.type==='message'){
+      //send message as req to to api.ai for intent classification.
+      console.log('passing message to api.ai for intent classification');
+      comm.intentClassification(data).then((response)=> {
+        // console.log('intentClassification response: '+response)
+        if(!(response===null || response===undefined)){
+          console.log('sending api.ai response to slack')
+          comm.submitMessage(response, data.event.channel)  
+        }
+      })
+    }
+
   }
   else if(!('token' in data || data.token===config.slack.event_token)){
     res.status('401').send('Unauthorized request')
@@ -111,8 +124,9 @@ service.post('/interaction', (req,res,next) => {
   console.log(context + ': ' + action)
 
   let response = getResponse(action, context)  
-  // response.prototype.speech = 'What do you think?'
-  return res.status(200).send(response)
+  //comm.submitRichMessage(response)
+  console.log('response is String? '+ typeof response==='string')
+  return typeof response==='string' ? res.json({text: response, replace_original: false}) : res.status(200).send(response)
 })
 
 
