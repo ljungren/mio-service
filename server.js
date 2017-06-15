@@ -70,7 +70,7 @@ service.post('/message', (req,res,next) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           // comm.submitMessage(response, data.event.channel).then((ok) => {
-          rtm.sendMessage(response, data.event.channel)
+          rtm.send(response, data.event.channel)
           // })
         }
       })
