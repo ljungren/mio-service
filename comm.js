@@ -49,7 +49,6 @@ module.exports = {
             //update current contexts, etc
 
             //return slack response
-            // if rich message() retrun the whole thing?
             resolve(body.result.fulfillment.speech)
           }
           else{
@@ -59,18 +58,33 @@ module.exports = {
       })
     })
   },
-  submitMessage: (text, initialReq) => {
+  submitMessage: (text, channel) => {
     //send message to slack
 
     // console.log('text: '+text)
     // console.log('initialReq: '+JSON.stringify(initialReq))
 
     let web = new WebClient(config.slack.web_token)
-    web.chat.postMessage(initialReq.event.channel, text, (err, res) => {
+    web.chat.postMessage(channel, text, (err, res) => {
       if (err) {
         console.log('Error:', err)
       } else {
-        console.log('Message recieved', res.ok ? 'ok' : 'with warning')
+        console.log('Message sent to slack, received:', res.ok ? 'ok' : 'with warning')
+      }
+    })
+  },
+  submitRichMessage: (json, channel) => {
+    //send message to slack
+
+    // console.log('text: '+text)
+    // console.log('initialReq: '+JSON.stringify(initialReq))
+
+    let web = new WebClient(config.slack.web_token)
+    web.chat.postMessage(channel, json, (err, res) => {
+      if (err) {
+        console.log('Error:', err)
+      } else {
+        console.log('Message sent to slack, received:', res.ok ? 'ok' : 'with warning')
       }
     })
   }
