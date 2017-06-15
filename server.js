@@ -17,7 +17,7 @@ const express  = require('express'),
 const service = express()
 var rtm = new RtmClient(config.slack.bot_token)
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  console.log(RTM connection opened);
+  console.log('RTM connection opened')
 })
 rtm.start()
 
