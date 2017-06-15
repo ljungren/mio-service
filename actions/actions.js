@@ -33,10 +33,11 @@ module.exports = {
         res.text = btnRes.housebe.contact
         break
     }
-    return res.text = btnRes.sliperiet.contact
+    return res
   },
   moreInfo: (context) => {
     //return object based on context
+    console.log('context: '+context);
     let res = {
       replace_original: false,
       text: ""
@@ -55,7 +56,7 @@ module.exports = {
         res.text = btnRes.lounge.info
         break
     }
-    return res.text = btnRes.sliperiet.info
+    return res
   },
   showNext: (context) => {
     //return object based on context

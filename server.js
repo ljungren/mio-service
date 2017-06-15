@@ -121,17 +121,15 @@ service.post('/webhook', (req,res,next) => {
 // INVOKES FROM INTERACTIVE MESSAGE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
-  // console.log('payload:'+ JSON.stringify(req.body.payload));
+  console.log('payload:'+ JSON.stringify(req.body.payload));
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
   let context = data.callback_id
   console.log(context + ': ' + action)
 
-  let response = getResponse(action, context)  
-  //comm.submitRichMessage(response)
-  console.log('response is String? '+ typeof response==='string')
-  return typeof response==='string' ? res.json({text: response, replace_original: false}) : res.status(200).send(response)
+  let response = getResponse(action, context)
+  return res.status(200).send(response)
 })
 
 
