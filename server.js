@@ -16,6 +16,9 @@ const express  = require('express'),
 // app
 const service = express()
 
+//RTM
+const rtm = new RtmClient(config.slack.bot_token)
+
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
 service.use(bodyParser.json())
@@ -211,7 +214,6 @@ const server = service.listen((process.env.PORT || 9000), () => {
   }
 
   //RTM
-  const rtm = new RtmClient(config.slack.bot_token)
   rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
     console.log('RTM connection opened')
   })
