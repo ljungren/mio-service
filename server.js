@@ -41,7 +41,7 @@ service.post('/message', (req,res,next) => {
   // identify request origin
   if('challenge' in data){
     console.log('slack authentication')
-    return res.status(200).send(req.body.challenge)
+    return res.status(200).send(data.challenge)
   }
   else if(data.event.user==='U5BJM9N4E'){
     console.log('ignoring bot message')
@@ -50,7 +50,7 @@ service.post('/message', (req,res,next) => {
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
     res.status(200).send()
-    handleMessage(data)
+    handleEvent(data)
   }
   else if(!('token' in data || data.token===config.slack.event_token)){
     return res.status(401).send('Unauthorized request')
@@ -134,14 +134,13 @@ const server = service.listen((process.env.PORT || 9000), () => {
 
 
 // Functions
-
-let handleMessage = (data) => {
+let handleEvent = (data) => {
     typing(true, data)    
     console.log('post from slack, event type: '+data.event.type)
-    // console.log('data: '+JSON.stringify(data))
+    console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      comm.submitMessage('Welcome!', data.event.channel)
+      comm.submitMessage('Welcome!', data.event.user.id)
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
