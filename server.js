@@ -217,7 +217,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
   rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
     console.log('RTM connection opened')
   })
-  rtmClient._handleMessageAck(replyTo, message)
+  //rtmClient._handleMessageAck(replyTo, message)
   rtm.start()
   
 })
