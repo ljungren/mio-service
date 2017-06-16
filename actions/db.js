@@ -4,7 +4,7 @@ const pg = require('pg')
 
 module.exports = {
   getUser: (user_slack_id) => {
-    console.log('get user from db');
+    console.log('get user from db')
     return new Promise((resolve, reject) => {
       pg.connect(process.env.DATABASE_URL, (err, client) => {
         if (err) throw err
@@ -18,7 +18,7 @@ module.exports = {
     })
   },
   addUser: (user_slack_id, user_name) => {
-    console.log('add user to db');
+    console.log('add user to db')
     return new Promise((resolve, reject) => {
       pg.connect(process.env.DATABASE_URL, (err, client) => {
         if (err) throw err
@@ -51,7 +51,7 @@ module.exports = {
     console.log('get user preferences from db')
   },
   updatePreference: (user_slack_id, user_company_domain, user_company_type=null, user_company_location=null, user_company_size=null, user_office_prize=null) => {
-    console.log('update user preferences from db');
+    console.log('update user preferences from db')
     return new Promise((resolve, reject) => {
       pg.connect(process.env.DATABASE_URL, (err, client) => {
         if (err) throw err
@@ -73,7 +73,7 @@ module.exports = {
 let q = (resolve, reject, err, client, str) => {
   client.query(str)
     .on('error', (error) => {
-      console.log('db: '+error);
+      console.log('db: '+error)
     })
     .on('drain', () => {
       client.end.bind(client)
@@ -81,7 +81,7 @@ let q = (resolve, reject, err, client, str) => {
     .on('row', (row) => {
       // console.log('Data: '+JSON.stringify(row))
       if(row===null || row===undefined || row===""){
-        console.log('empty db response');
+        console.log('empty db response')
         resolve(null)
       }
       resolve(row)
