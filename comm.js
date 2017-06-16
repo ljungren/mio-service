@@ -85,5 +85,8 @@ module.exports = {
         }
       })
     })
+  },
+  openDm: (user_slack_id) => {
+    //trigger im_open event with im.open method
   }
 }
