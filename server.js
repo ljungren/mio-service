@@ -89,7 +89,7 @@ let typing = (typing, data) => {
   }
   else{
     console.log('stop typing')
-    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log(e)) : rtm.reconnect()
+    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log('empty mess ok')) : rtm.reconnect()
   }
 }
 
@@ -217,7 +217,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
   rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
     console.log('RTM connection opened')
   })
-  // rtmClient._handleMessageAck(replyTo, message)
+  rtmClient._handleMessageAck(replyTo, message)
   rtm.start()
   
 })
