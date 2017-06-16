@@ -16,13 +16,6 @@ const express  = require('express'),
 // app
 const service = express()
 
-//RTM
-const rtm = new RtmClient(config.slack.bot_token)
-rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-  console.log('RTM connection opened')
-})
-rtm.start()
-
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
 service.use(bodyParser.json())
@@ -93,7 +86,7 @@ let typing = (typing, data) => {
   }
   else{
     console.log('stop typing')
-    rtm.connected ? rtm.sendMessage(' ', data.event.channel) : rtm.reconnect()
+    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log(e)) : rtm.reconnect()
   }
 }
 
@@ -216,5 +209,14 @@ const server = service.listen((process.env.PORT || 9000), () => {
       })
     }, 1200000)
   }
+
+  //RTM
+  const rtm = new RtmClient(config.slack.bot_token)
+  rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+    console.log('RTM connection opened')
+  })
+  // rtmClient._handleMessageAck(replyTo, message)
+  rtm.start()
+  
 })
 
