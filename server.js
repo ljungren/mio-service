@@ -54,7 +54,7 @@ service.post('/message', (req,res,next) => {
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
     res.status(200).send()
-    typing(true)    
+    typing(true, data)    
 
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
@@ -69,7 +69,7 @@ service.post('/message', (req,res,next) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           comm.submitMessage(response, data.event.channel).then((ok) => {
-            typing(false)
+            typing(false, data)
           })
         }
       })
@@ -84,7 +84,7 @@ service.post('/message', (req,res,next) => {
   }
 })
 
-let typing = (typing) => {
+let typing = (typing, data) => {
   if(typing){
     console.log('start typing')
     rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
@@ -93,9 +93,7 @@ let typing = (typing) => {
   }
   else{
     console.log('stop typing')
-    rtm.connected ? rtm.sendMessage(' ', data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
-      rtm.sendMessage(' ', data.event.channel)
-    })
+    rtm.connected ? rtm.sendMessage(' ', data.event.channel) : rtm.reconnect()
   }
 }
 
