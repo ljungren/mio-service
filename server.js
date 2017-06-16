@@ -17,7 +17,7 @@ const express  = require('express'),
 const service = express()
 
 //RTM
-var rtm = new RtmClient(config.slack.bot_token)
+const rtm = new RtmClient(config.slack.bot_token)
 rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
   console.log('RTM connection opened')
 })
@@ -39,7 +39,6 @@ service.get('/', (req,res,next) => {
 
 //INVOKES FROM SLACK MESSAGE
 service.post('/message', (req,res,next) => {
-
   // console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
 
@@ -55,12 +54,7 @@ service.post('/message', (req,res,next) => {
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
     res.status(200).send()
-
-    //send typing event
-    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
-      rtm.sendTyping(data.event.channel)
-    })
-    
+    typing(true)    
 
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
@@ -75,12 +69,7 @@ service.post('/message', (req,res,next) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           comm.submitMessage(response, data.event.channel).then((ok) => {
-            try{
-              rtm.disconnect()
-            }catch(e){
-              if(e instanceof SlackRTMError)
-                console.log(e)
-            }
+            typing(false)
           })
         }
       })
@@ -95,6 +84,20 @@ service.post('/message', (req,res,next) => {
   }
 })
 
+let typing = (typing) => {
+  if(typing){
+    console.log('start typing')
+    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
+      rtm.sendTyping(data.event.channel)
+    })
+  }
+  else{
+    console.log('stop typing')
+    rtm.connected ? rtm.sendMessage(' ', data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
+      rtm.sendMessage(' ', data.event.channel)
+    })
+  }
+}
 
 
 // INVOKES FROM API.AI INTENT FULFILLMENT
@@ -136,7 +139,7 @@ service.post('/interaction', (req,res,next) => {
 
   let action = data.actions[0].value
   let context = data.callback_id
-  console.log(context + ': ' + action)
+  console.log('button interaction: '+ context + ': ' + action)
 
   let response = getResponse(action, context)
   return res.status(200).send(response)
