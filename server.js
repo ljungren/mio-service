@@ -50,27 +50,7 @@ service.post('/message', (req,res,next) => {
   else if('token' in data && data.token===config.slack.event_token){
     //event call is ok
     res.status(200).send()
-    typing(true, data)    
-
-    console.log('post from slack, event type: '+data.event.type)
-    // console.log('data: '+JSON.stringify(data))
-
-    //extract events and do something if not normal message
-
-    if(data.event.type==='message'){
-      //send message as req to to api.ai for intent classification.
-      console.log('passing message to api.ai for intent classification');
-      comm.intentClassification(data).then((response)=> {
-        // console.log('intentClassification response: '+response)
-        if(!(response===null || response===undefined)){
-          console.log('sending api.ai response to slack')
-          comm.submitMessage(response, data.event.channel).then((ok) => {
-            typing(false, data)
-          })
-        }
-      })
-    }
-
+    handleMessage(data)
   }
   else if(!('token' in data || data.token===config.slack.event_token)){
     return res.status(401).send('Unauthorized request')
@@ -79,20 +59,6 @@ service.post('/message', (req,res,next) => {
     return res.status(400).send('Bad request')
   }
 })
-
-let typing = (typing, data) => {
-  if(typing){
-    console.log('start typing')
-    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
-      rtm.sendTyping(data.event.channel)
-    })
-  }
-  else{
-    console.log('stop typing')
-    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log('empty mess ok')) : rtm.reconnect()
-  }
-}
-
 
 // INVOKES FROM API.AI INTENT FULFILLMENT
 service.post('/webhook', (req,res,next) => {
@@ -128,7 +94,7 @@ service.post('/webhook', (req,res,next) => {
 // INVOKES FROM INTERACTIVE MESSAGE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
-  // console.log('payload:'+ JSON.stringify(req.body.payload));
+  // console.log('payload:'+ JSON.stringify(req.body.payload))
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
@@ -139,9 +105,80 @@ service.post('/interaction', (req,res,next) => {
   return res.status(200).send(response)
 })
 
+//start Server
+const server = service.listen((process.env.PORT || 9000), () => {
+
+  console.log("Listening to port %s",server.address().port)
+
+  // ssl in production
+  pg.defaults.ssl = server.address().port===9000 ? false : true
+
+  // alive message in prod
+  if(!(server.address().port===9000)){
+    setInterval(() => {
+      request('https://mio-service.herokuapp.com/', (error, response, body) => {
+        if(error) 
+          console.log('alive error: ' + error)
+
+        console.log('self-invoked ALIVE: ' + body + ', status: ' + response.statusCode)
+      })
+    }, 1200000)
+  }
+  //RTM
+  rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+    console.log('RTM connection opened')
+  })
+  rtm.start()
+})
 
 
-//get response or action based on custom events
+
+// Functions
+
+let handleMessage = (data) => {
+    typing(true, data)    
+    console.log('post from slack, event type: '+data.event.type)
+    // console.log('data: '+JSON.stringify(data))
+    if(data.event.type==='team_join'){
+      console.log('a new user has joined')
+      comm.submitMessage('Welcome!', data.event.channel)
+    }
+    else if(data.event.type==='im_open'){
+      console.log('a DM channel was opened')
+      getIntro(data.event.user).then((response) => {
+        comm.submitMessage(response, data.event.channel)
+      })
+    }
+    else if(data.event.type==='message'){
+      //send message as req to to api.ai for intent classification.
+      console.log('passing message to api.ai for intent classification')
+      comm.intentClassification(data).then((response)=> {
+        // console.log('intentClassification response: '+response)
+        if(!(response===null || response===undefined)){
+          console.log('sending api.ai response to slack')
+          comm.submitMessage(response, data.event.channel).then((ok) => {
+            typing(false, data)
+          })
+        }
+      })
+    }
+}
+
+
+let typing = (typing, data) => {
+  if(typing){
+    console.log('start typing')
+    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
+      rtm.sendTyping(data.event.channel)
+    })
+  }
+  else{
+    console.log('stop typing')
+    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log('empty rtm mess ok')) : rtm.reconnect()
+  }
+}
+
+//get response or action based on classified intents
 let getResponse = (action, context, param1=null, param2=null) => {
     switch(action){
     case 'contact':
@@ -160,11 +197,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
       //if new user, give introduction, otherwise continue on current context
-      return getIntro(action, context, param1)
-      break
-    case 'identify_user':
-      console.log('identify user')
-      return actions.identify(param1)
+      return getIntro(param1)
       break
     case 'location_search':
       //user searched for office
@@ -175,50 +208,20 @@ let getResponse = (action, context, param1=null, param2=null) => {
       console.log('relevance was asked')
       break
     default:
-      console.log('no specific action, calling api.ai')
-      //return callApiAi()
+      console.log('no specific action, responding with fallback')
+      return new Promise((resolve, reject) => {
+        resolve("Sorry, I don't understand")
+      })
   }
 }
 
-let getIntro = (action, context, param1) => {
+let getIntro = (slack_id) => {
   return new Promise((resolve, reject)=>{
-    actions.identify(param1).then((user)=>{
+    actions.identify(slack_id).then((user)=>{
       actions.intro(user).then((response) => {
         resolve(response)
       })
     })
   })
 }
-
-
-
-
-//start Server
-const server = service.listen((process.env.PORT || 9000), () => {
-
-  console.log("Listening to port %s",server.address().port)
-
-  // ssl in production
-  pg.defaults.ssl = server.address().port===9000 ? false : true;
-
-  // alive message in prod
-  if(!(server.address().port===9000)){
-    setInterval(() => {
-      request('https://mio-service.herokuapp.com/', (error, response, body) => {
-        if(error) 
-          console.log('alive error: ' + error);
-
-        console.log('self-invoked ALIVE: ' + body + ', status: ' + response.statusCode);
-      })
-    }, 1200000)
-  }
-
-  //RTM
-  rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
-    console.log('RTM connection opened')
-  })
-  //rtmClient._handleMessageAck(replyTo, message)
-  rtm.start()
-  
-})
 
