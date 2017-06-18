@@ -89,7 +89,7 @@ module.exports = {
   openDm: (user_slack_id) => {
     //trigger im_open event with im.open method
     return new Promise((resolve, reject) => {
-      webClient.im.open(user_slack_id, (err, resp) => {
+      web.im.open(user_slack_id, (err, res) => {
         if (err) {
           console.log('Error:', err)
         } else {
