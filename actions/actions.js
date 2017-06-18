@@ -6,6 +6,7 @@ request = require('request'),
 config = require('../config.js')
 //import example data
 const btnRes = require('../data/contact-and-info.js'),
+  contextRes = require('../data/context-response.js'),
   greeting = require('../data/greeting.js'),
   sliperiet = require('../data/sliperiet.js'),
   northern = require('../data/northern.js'),
@@ -105,6 +106,20 @@ module.exports = {
     }).catch((err) => {
       console.log('user request not valid')
     })
+  },
+  context: (user_slack_id) => {
+    return new Promise((resolve, reject) => {
+      db.getUser(user_slack_id).then((user) => {
+        //pass user to info complementation
+        return user
+      }).then((user) => {
+        let response = user.user_current_context ? contextRes.existing_context(user.user_current_context) : contextRes.new_search()
+        resolve(response)
+      })
+    })
+  },
+  addContext: () => {
+
   }
 }
 
@@ -112,16 +127,6 @@ let addContext= (user, slack_id) => {
 
 }
 
-let getContext= (user, slack_id) => {
-  return new Promise((resolve, reject) => {
-    db.getUser(user_slack_id).then((user) => {
-      //pass user to info complementation
-      return user
-    }).then((user) => {
-      //...
-    })
-  })
-}
 
 let addUserName = (user, slack_id) => {
 
