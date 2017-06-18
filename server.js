@@ -236,10 +236,8 @@ let getIntro = (slack_id) => {
 
 let getContext = (slack_id) => {
   return new Promise((resolve, reject)=>{
-    actions.identify(slack_id).then((user)=>{
-      actions.intro(user).then((response) => {
-        resolve(response)
-      })
+    actions.context(slack_id).then((response)=>{
+      resolve(response)
     })
   })
 }
