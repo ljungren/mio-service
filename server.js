@@ -137,11 +137,11 @@ const server = service.listen((process.env.PORT || 9000), () => {
 let handleEvent = (data) => {
     typing(true, data)    
     console.log('post from slack, event type: '+data.event.type)
-    // console.log('data: '+JSON.stringify(data))
+    console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
       comm.submitMessage('Welcome!', data.event.user.id).then(()=>{
-        //... im.open method?
+        comm.openDm(data.event.user.id)
       })
     }
     else if(data.event.type==='im_open'){

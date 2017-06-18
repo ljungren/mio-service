@@ -88,5 +88,15 @@ module.exports = {
   },
   openDm: (user_slack_id) => {
     //trigger im_open event with im.open method
+    return new Promise((resolve, reject) => {
+      webClient.im.open(user_slack_id, (err, resp) => {
+        if (err) {
+          console.log('Error:', err)
+        } else {
+          console.log('Dm channel opened, response:', res.ok ? 'ok' : 'with warning')
+          resolve(res.ok)
+        }
+      })
+    }) 
   }
 }
