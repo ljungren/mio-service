@@ -112,6 +112,17 @@ let addContext= (user, slack_id) => {
 
 }
 
+let getContext= (user, slack_id) => {
+  return new Promise((resolve, reject) => {
+    db.getUser(user_slack_id).then((user) => {
+      //pass user to info complementation
+      return user
+    }).then((user) => {
+      //...
+    })
+  })
+}
+
 let addUserName = (user, slack_id) => {
 
   return new Promise((resolve, reject) => {

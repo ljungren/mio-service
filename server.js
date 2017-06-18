@@ -141,9 +141,11 @@ let handleEvent = (data) => {
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      // comm.submitMessage('Welcome!', data.event.user.id).then(()=>{
+      getIntro(data.event.user.id).then((response) => {
+        comm.submitMessage(response, data.event.user.id)
+      }).then(()=>{
         comm.openDm(data.event.user.id)
-      // })
+      })
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
@@ -201,6 +203,11 @@ let getResponse = (action, context, param1=null, param2=null) => {
       //if new user, give introduction, otherwise continue on current context
       return getIntro(param1)
       break
+    case 'office_find':
+      //user searched for office
+      console.log('user wants to find office')
+      return getContext(param1)
+      break
     case 'location_search':
       //user searched for office
       console.log('searched location')
@@ -226,4 +233,15 @@ let getIntro = (slack_id) => {
     })
   })
 }
+
+let getContext = (slack_id) => {
+  return new Promise((resolve, reject)=>{
+    actions.identify(slack_id).then((user)=>{
+      actions.intro(user).then((response) => {
+        resolve(response)
+      })
+    })
+  })
+}
+
 
