@@ -33,7 +33,7 @@ service.get('/', (req,res,next) => {
   return res.status(200).send('api available')
 })
 
-//INVOKES FROM SLACK MESSAGE
+//INVOKES FROM SLACK EVENT
 service.post('/message', (req,res,next) => {
   // console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
@@ -43,7 +43,7 @@ service.post('/message', (req,res,next) => {
     console.log('slack authentication')
     return res.status(200).send(data.challenge)
   }
-  else if(data.event.user==='U5BJM9N4E'){
+  else if(data.event.user===config.slack.bot_id){
     console.log('ignoring bot message')
     return res.status(202).send('Ignoring bot message')
   }
@@ -91,7 +91,7 @@ service.post('/webhook', (req,res,next) => {
 })
 
 
-// INVOKES FROM INTERACTIVE MESSAGE BUTTONS
+// INVOKES FROM SLACK INTERACTIVE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
   // console.log('payload:'+ JSON.stringify(req.body.payload))
@@ -104,6 +104,7 @@ service.post('/interaction', (req,res,next) => {
   let response = getResponse(action, context)
   return res.status(200).send(response)
 })
+
 
 //start Server
 const server = service.listen((process.env.PORT || 9000), () => {
@@ -137,12 +138,12 @@ const server = service.listen((process.env.PORT || 9000), () => {
 let handleEvent = (data) => {
     typing(true, data)    
     console.log('post from slack, event type: '+data.event.type)
-    console.log('data: '+JSON.stringify(data))
+    // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      comm.submitMessage('Welcome!', data.event.user.id).then(()=>{
+      // comm.submitMessage('Welcome!', data.event.user.id).then(()=>{
         comm.openDm(data.event.user.id)
-      })
+      // })
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
