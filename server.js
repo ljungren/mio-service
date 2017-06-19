@@ -195,12 +195,14 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'next':
       console.log('new search requested')
-      // getResponse('location_search', context, param1)
-      return actions.showNext(context)
+      let newObj = actions.showNext(context)
+      let newContxt = newObj.attachments[0].callback_id
+      console.log('newContxt: '+ newContxt);
+      actions.updateContext(param1, newContxt)
+      return newObj
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
-      //if new user, give introduction, otherwise continue on current context
       return getIntro(param1)
       break
     case 'office_find':
@@ -211,7 +213,11 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      return actions.showNext(context)
+      let newObject = actions.showNext(context)
+      let newContext = newObject.attachments[0].callback_id
+      console.log('newContxt: '+ newContext);
+      actions.updateContext(param1, newContext)
+      return newObject
       break
     case 'relevance_ask':
       console.log('relevance was asked')
@@ -219,7 +225,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
     default:
       console.log('no specific action, responding with fallback')
       return new Promise((resolve, reject) => {
-        resolve("Sorry, I don't understand")
+        resolve("Sorry, I don't understand quite understand :confused:")
       })
   }
 }
