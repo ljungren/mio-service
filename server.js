@@ -94,11 +94,12 @@ service.post('/webhook', (req,res,next) => {
 // INVOKES FROM SLACK INTERACTIVE BUTTONS
 service.post('/interaction', (req,res,next) => {
 
-  // console.log('payload:'+ JSON.stringify(req.body.payload))
+  console.log('payload:'+ JSON.stringify(req.body.payload))
   let data = JSON.parse(req.body.payload)
 
   let action = data.actions[0].value
   let context = data.callback_id
+  // let context = data.event.
   console.log('button interaction: '+ context + ': ' + action)
 
   let response = getResponse(action, context)
@@ -195,6 +196,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'next':
       console.log('new search requested')
+      comm.submitMessage('Ok! One sec...', param1)
       let newObj = actions.showNext(context)
       let newContxt = newObj.attachments[0].callback_id
       console.log('newContxt: '+ newContxt);
