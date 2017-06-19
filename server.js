@@ -99,10 +99,10 @@ service.post('/interaction', (req,res,next) => {
 
   let action = data.actions[0].value
   let context = data.callback_id
-  // let context = data.event.
+  let id = data.user.id
   console.log('button interaction: '+ context + ': ' + action)
 
-  let response = getResponse(action, context)
+  let response = getResponse(action, context, id)
   return res.status(200).send(response)
 })
 
