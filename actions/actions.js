@@ -118,15 +118,17 @@ module.exports = {
       })
     })
   },
-  addContext: () => {
-
+  updateContext: (user_slack_id, context) => {
+    return new Promise((resolve, reject) => {
+      db.getUser(user_slack_id).then((user) => {
+        //pass user to info complementation
+        return user
+      }).then((user) => {
+        db.updateUser(user_slack_id, user.user_name, context)
+      })
+    })
   }
 }
-
-let addContext= (user, slack_id) => {
-
-}
-
 
 let addUserName = (user, slack_id) => {
 
