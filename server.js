@@ -213,6 +213,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'location_search':
       //user searched for office
       console.log('searched location')
+      comm.submitMessage('Ok! One sec...', param1)
       let newObject = actions.showNext(context)
       let newContext = newObject.attachments[0].callback_id
       console.log('newContxt: '+ newContext);
