@@ -178,7 +178,7 @@ let typing = (typing, data) => {
 //get response or action based on classified intents
 let getResponse = (action, context, param1=null, param2=null) => {
     switch(action){
-    case 'contact_text':
+    case 'contact':
       console.log('contact info requested')
       return actions.contact(context)
       break
@@ -186,16 +186,15 @@ let getResponse = (action, context, param1=null, param2=null) => {
       console.log('more info requested')
       return actions.moreInfo(context)
       break
+    case 'contact_text':
+      console.log('contact info requested')
+      return new Promise((resolve, reject) => {
+        resolve(actions.contact(context))
+      })
+      break
     case 'next':
       console.log('new search requested')
-      comm.submitMessage('One sec...', param1)
-      let newObj = actions.showNext(context)
-      let newContxt = newObj.attachments[0].callback_id
-      console.log('newContxt: '+ newContxt);
-      actions.updateContext(param1, newContxt).then(()=>{
-        comm.submitMessage('What about this?', param1)
-      })
-      return newObj
+      return getOffice(param1, context, 'One sec...', 'How about this?', 'Go on and get in touch!')
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
@@ -209,21 +208,17 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      comm.submitMessage('Got it! checking...', param1)
-      let newObject = actions.showNext(context)
-      let newContext = newObject.attachments[0].callback_id
-      console.log('newContxt: '+ newContext);
-      actions.updateContext(param1, newContext).then(()=>{
-        comm.submitMessage('How about this?', param1)
-      })
-      return newObject
+      return getOffice(param1, context, 'Got it! checking...', '', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
       break
     case 'relevance_ask':
       console.log('relevance was asked')
+      return new Promise((resolve, reject) => {
+        resolve("Just trust mo ok? :wink:")
+      })
       break
     case 'search_again':
-      console.log('searched again')
-      comm.submitMessage("Hang on! I'll check...", param1)
+      console.log('searched office again')
+      return getOffice(param1, context, "Hang on! I'll check...", 'How about this?', 'Go on and give them a call!')
       break
     default:
       console.log('no specific action, responding with fallback')
@@ -248,6 +243,29 @@ let getContext = (slack_id) => {
     actions.context(slack_id).then((response)=>{
       resolve(response)
     })
+  })
+}
+
+let getOffice = (id, context, str1, str2, str3) => {
+  comm.submitMessage(str1, id)
+  let newObject = actions.showNext(context)
+  let newContext = newObject.attachments[0].callback_id
+  console.log('newContxt: '+ newContext);
+  actions.updateContext(id, newContext).then(()=>{
+    comm.submitMessage(str2, id).then(()=>{
+      delay(2000).then(()=>{
+        comm.submitMessage(str3, id)
+      })
+    })
+  })
+  return newObject
+}
+
+let delay = (duration) => {
+  return new Promise((resolve, reject)=>{
+    setTimeout(() => {
+      resolve('ok')
+    }, duration)
   })
 }
 

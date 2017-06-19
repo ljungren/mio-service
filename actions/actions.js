@@ -77,9 +77,6 @@ module.exports = {
     //returns user name or null
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-        //pass user to info complementation
-        return user
-      }).then((user) => {
         addUserName(user, user_slack_id).then((usr) => {
           resolve(usr)
           return usr
@@ -110,23 +107,23 @@ module.exports = {
   context: (user_slack_id) => {
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-        //pass user to info complementation
-        return user
-      }).then((user) => {
-        let response = user.user_current_context ? contextRes.existing_context(user.user_current_context) : contextRes.new_search()
-        resolve(response)
+        if(user){
+          let response = (user.user_current_context ? contextRes.existing_context(user.user_current_context) : contextRes.new_search())
+          resolve(response)
+        }
       })
+    }).catch((err) => {
+      console.log('something went wrong with sending context response')
     })
   },
   updateContext: (user_slack_id, context) => {
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-        //pass user to info complementation
-        return user
-      }).then((usr) => {
         // console.log('usr: '+JSON.stringify(usr))
-        db.updateUser(user_slack_id, usr.user_name, context)
+        db.updateUser(user_slack_id, user.user_name, context)
       })
+    }).catch((err) => {
+      console.log('context could not be updated')
     })
   }
 }
