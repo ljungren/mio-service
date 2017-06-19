@@ -123,8 +123,9 @@ module.exports = {
       db.getUser(user_slack_id).then((user) => {
         //pass user to info complementation
         return user
-      }).then((user) => {
-        db.updateUser(user_slack_id, user.user_name, context)
+      }).then((usr) => {
+        console.log(JSON.stringify(usr));
+        db.updateUser(user_slack_id, usr.user_name, context)
       })
     })
   }
