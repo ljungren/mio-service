@@ -37,7 +37,6 @@ service.get('/', (req,res,next) => {
 service.post('/message', (req,res,next) => {
   // console.log('data:'+ JSON.stringify(req.body))
   let data = req.body
-
   // identify request origin
   if('challenge' in data){
     console.log('slack authentication')
@@ -62,16 +61,12 @@ service.post('/message', (req,res,next) => {
 
 // INVOKES FROM API.AI INTENT FULFILLMENT
 service.post('/webhook', (req,res,next) => {
-
   let data = req.body
-
   console.log('webhook fulfillment request from api.ai')
   // console.log('webhook req.body: '+JSON.stringify(req.body))
-
   //get params
   let action = data.result.action
   let user_slack_id = data.sessionId
-
   let obj = getResponse(action, null, user_slack_id)
 
   if(obj instanceof Promise){
@@ -87,16 +82,13 @@ service.post('/webhook', (req,res,next) => {
       return res.json({speech: 'what do you think?', source: "slack"})
     })
   }
-
 })
 
 
 // INVOKES FROM SLACK INTERACTIVE BUTTONS
 service.post('/interaction', (req,res,next) => {
-
-  console.log('payload:'+ JSON.stringify(req.body.payload))
+  // console.log('payload:'+ JSON.stringify(req.body.payload))
   let data = JSON.parse(req.body.payload)
-
   let action = data.actions[0].value
   let context = data.callback_id
   let id = data.user.id
@@ -186,7 +178,7 @@ let typing = (typing, data) => {
 //get response or action based on classified intents
 let getResponse = (action, context, param1=null, param2=null) => {
     switch(action){
-    case 'contact':
+    case 'contact_text':
       console.log('contact info requested')
       return actions.contact(context)
       break
@@ -196,11 +188,13 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'next':
       console.log('new search requested')
-      comm.submitMessage('Ok! One sec...', param1)
+      comm.submitMessage('One sec...', param1)
       let newObj = actions.showNext(context)
       let newContxt = newObj.attachments[0].callback_id
       console.log('newContxt: '+ newContxt);
-      actions.updateContext(param1, newContxt)
+      actions.updateContext(param1, newContxt).then(()=>{
+        comm.submitMessage('What about this?', param1)
+      })
       return newObj
       break
     case 'smalltalk.greetings.hello':
@@ -215,15 +209,21 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      comm.submitMessage('Ok! One sec...', param1)
+      comm.submitMessage('Got it! checking...', param1)
       let newObject = actions.showNext(context)
       let newContext = newObject.attachments[0].callback_id
       console.log('newContxt: '+ newContext);
-      actions.updateContext(param1, newContext)
+      actions.updateContext(param1, newContext).then(()=>{
+        comm.submitMessage('How about this?', param1)
+      })
       return newObject
       break
     case 'relevance_ask':
       console.log('relevance was asked')
+      break
+    case 'search_again':
+      console.log('searched again')
+      comm.submitMessage("Hang on! I'll check...", param1)
       break
     default:
       console.log('no specific action, responding with fallback')
