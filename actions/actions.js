@@ -2,8 +2,7 @@
 
 //inport modules
 const db = require('./db.js'),
-request = require('request'),
-config = require('../config.js')
+request = require('request')
 //import example data
 const btnRes = require('../data/contact-and-info.js'),
   contextRes = require('../data/context-response.js'),
