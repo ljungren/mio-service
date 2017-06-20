@@ -127,7 +127,6 @@ module.exports = {
 
 let addUserDetails = (user, slack_id) => {
   return new Promise((resolve, reject) => {
-
     getSlackUserInfo(slack_id).then((info) => {
       // get user info from slack
       if(info.ok){
@@ -167,7 +166,7 @@ let getSlackUserInfo = (slack_id) => {
     request(
       { 
         method: 'GET',
-        uri: 'https://slack.com/api/users.info?token='+config.slack.web_token+'&user='+slack_id
+        uri: 'https://slack.com/api/users.info?token='+process.env.WEB_TOKEN+'&user='+slack_id
       }
     )
     .on('error', () => {

@@ -4,7 +4,8 @@ const WebClient = require('@slack/client').WebClient,
 request = require('request'),
 config = require('./config.js')
 
-let web = new WebClient(config.slack.bot_token)
+// declare web client
+let web
 
 module.exports = {
 
@@ -36,7 +37,7 @@ module.exports = {
         method: "POST",
         json: true,
         headers: {
-            "authorization": "Bearer "+config.apiai_access_token,
+            "authorization": "Bearer "+process.env.APIAI_TOKEN,
             "content-type": "application/json; charset=utf-8"
         },
         body: apiAiRequest
@@ -64,6 +65,7 @@ module.exports = {
   },
   submitMessage: (text, channel) => {
     //send normal message to slack
+    createWebClient()
     return new Promise((resolve, reject) => {
       web.chat.postMessage(channel, text, { as_user: true, replace_original: false}, (err, res) => {
         if (err) {
@@ -77,6 +79,7 @@ module.exports = {
   },
   submitRichMessage: (obj, channel) => {
     //send rich message to slack
+    createWebClient()
     return new Promise((resolve, reject) => {
       web.chat.postMessage(channel, '', { attachments: obj.attachments, as_user: true, replace_original: false}, (err, res) => {
         if (err) {
@@ -90,6 +93,7 @@ module.exports = {
   },
   openDm: (user_slack_id) => {
     //trigger im_open event with im.open method
+    createWebClient()
     return new Promise((resolve, reject) => {
       web.im.open(user_slack_id, (err, res) => {
         if (err) {
@@ -100,5 +104,11 @@ module.exports = {
         }
       })
     }) 
+  }
+}
+
+let createWebClient = () => {
+  if(web===undefined){
+    web = new WebClient(process.env.BOT_TOKEN)
   }
 }

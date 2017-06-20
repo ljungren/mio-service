@@ -13,12 +13,12 @@ const express  = require('express'),
   comm = require('./comm.js'),
   config = require('./config.js')
 
-// app
+// configure env
+require('dotenv').config()
+// create app
 const service = express()
-
-//RTM
-const rtm = new RtmClient(config.slack.bot_token)
-
+//declare RTM api
+let rtm
 //middleware
 service.use(bodyParser.urlencoded({ extended: true }))
 service.use(bodyParser.json())
@@ -42,16 +42,16 @@ service.post('/message', (req,res,next) => {
     console.log('slack authentication')
     return res.status(200).send(data.challenge)
   }
-  else if(data.event.user===config.slack.bot_id){
+  else if(data.event.user===process.env.BOT_ID){
     console.log('ignoring bot message')
     return res.status(202).send('Ignoring bot message')
   }
-  else if('token' in data && data.token===config.slack.event_token){
+  else if('token' in data && data.token===process.env.EVENT_TOKEN){
     //event call is ok
     res.status(200).send()
     handleEvent(data)
   }
-  else if(!('token' in data || data.token===config.slack.event_token)){
+  else if(!('token' in data || data.token===process.env.EVENT_TOKEN)){
     return res.status(401).send('Unauthorized request')
   }
   else{
@@ -119,6 +119,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
     }, 1200000)
   }
   //RTM
+  rtm = new RtmClient(process.env.BOT_TOKEN)
   rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
     console.log('RTM connection opened')
   })
