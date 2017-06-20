@@ -9,6 +9,7 @@ const express  = require('express'),
   CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS,
   // apiai = require('apiai'),
   pg = require('pg'),
+  db = require('./actions/db.js'),
   actions = require('./actions/actions.js'),
   comm = require('./comm.js')
 
@@ -66,21 +67,20 @@ service.post('/webhook', (req,res,next) => {
   //get params
   let action = data.result.action
   let user_slack_id = data.sessionId
-  let obj = getResponse(action, null, user_slack_id)
 
-  if(obj instanceof Promise){
-    obj.then((response) => {
+  getResponse(action, null, user_slack_id).then((response) => {
+    if(response.hasOwnProperty('attachments')){
+      //send rich message directly to slack client
+      console.log('sending office suggestion')
+      comm.submitRichMessage(response, data.originalRequest.data.event.channel).then((ok) => {
+        //return fulfillment response to api.ai
+        return res.json({speech: 'what do you think?', source: "slack"})
+      })
+    }
+    else{
       return response ? res.json({speech: response, source: "slack"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "slack"})
-    })
-  }
-  else{
-    //if not promise, it's a rich message. Send directly to slack client
-    console.log('sending office suggestion')
-    comm.submitRichMessage(obj, data.originalRequest.data.event.channel).then((ok) => {
-      //return fulfillment response to api.ai
-      return res.json({speech: 'what do you think?', source: "slack"})
-    })
-  }
+    }
+  })
 })
 
 
@@ -132,7 +132,7 @@ let handleEvent = (data) => {
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      getIntro(data.event.user.id).then((response) => {
+      getIntroMess(data.event.user.id).then((response) => {
         comm.submitMessage(response, data.event.user.id)
       }).then(()=>{
         comm.openDm(data.event.user.id)
@@ -140,7 +140,7 @@ let handleEvent = (data) => {
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
-      getIntro(data.event.user).then((response) => {
+      getIntroMess(data.event.user).then((response) => {
         comm.submitMessage(response, data.event.channel)
       })
     }
@@ -158,7 +158,6 @@ let handleEvent = (data) => {
       })
     }
 }
-
 
 let typing = (typing, data) => {
   if(typing){
@@ -192,21 +191,21 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'next':
       console.log('new search requested')
-      return getOffice(param1, context, 'One sec...', 'How about this?', 'Go on and get in touch!')
+      return getOfficeMess(param1, 'One sec...', 'Go on and get in touch! :+1:')
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
-      return getIntro(param1)
+      return getIntroMess(param1)
       break
     case 'office_find':
       //user searched for office
       console.log('user wants to find office')
-      return getContext(param1)
+      return getContextMess(param1)
       break
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      return getOffice(param1, context, 'Got it! checking...', 'Well?', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
+      return getOfficeMess(param1, 'Got it! checking...', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
       break
     case 'relevance_ask':
       console.log('relevance was asked')
@@ -216,7 +215,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'search_again':
       console.log('searched office again')
-      return getOffice(param1, context, "Hang on! I'll check...", 'How about this?', 'Go on and give them a call!')
+      return getOfficeMess(param1, "Hang on! I'll check...", 'Go on and give them a call! :slightly_smiling_face:')
       break
     default:
       console.log('no specific action, responding with fallback')
@@ -226,36 +225,37 @@ let getResponse = (action, context, param1=null, param2=null) => {
   }
 }
 
-let getIntro = (slack_id) => {
+let getIntroMess = (slack_id) => {
   return new Promise((resolve, reject)=>{
     actions.identify(slack_id).then((user)=>{
-      actions.intro(user).then((response) => {
+      actions.introMess(user).then((response) => {
         resolve(response)
       })
     })
   })
 }
 
-let getContext = (slack_id) => {
+let getContextMess = (slack_id) => {
   return new Promise((resolve, reject)=>{
-    actions.context(slack_id).then((response)=>{
+    actions.contextMess(slack_id).then((response)=>{
       resolve(response)
     })
   })
 }
 
-let getOffice = (id, context, str1, str2, str3) => {
-  comm.submitMessage(str1, id)
-  let newObject = actions.showNext(context)
-  let newContext = newObject.attachments[0].callback_id
-  actions.updateContext(id, newContext).then(()=>{
-    comm.submitMessage(str2, id).then(()=>{
-      delay(2000).then((ok)=>{
-        comm.submitMessage(str3, id)
+let getOfficeMess = (id, str1, str2) => {
+  return new Promise((resolve, reject) => {
+    comm.submitMessage(str1, id)
+    actions.getContext(id).then((prevContext) => {
+      let newObject = actions.showNext(prevContext)
+      let newContext = newObject.attachments[0].callback_id
+      resolve(newObject)
+      actions.updateContext(id, newContext)
+      delay(8000).then(() => {
+        comm.submitMessage(str2, id)
       })
     })
   })
-  return newObject
 }
 
 let delay = (duration) => {
