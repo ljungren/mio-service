@@ -10,8 +10,7 @@ const express  = require('express'),
   // apiai = require('apiai'),
   pg = require('pg'),
   actions = require('./actions/actions.js'),
-  comm = require('./comm.js'),
-  config = require('./config.js')
+  comm = require('./comm.js')
 
 // configure env
 require('dotenv').config()
@@ -125,8 +124,6 @@ const server = service.listen((process.env.PORT || 9000), () => {
   })
   rtm.start()
 })
-
-
 
 // Functions
 let handleEvent = (data) => {
