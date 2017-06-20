@@ -77,10 +77,8 @@ module.exports = {
     //returns user name or null
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-        addUserName(user, user_slack_id).then((usr) => {
+        addUserDetails(user, user_slack_id).then((usr) => {
           resolve(usr)
-          return usr
-        }).then((usr) => {
           //add user if not exists
           if(usr && !(usr===undefined)){
             if(usr.insert){
@@ -101,7 +99,7 @@ module.exports = {
       resolve((user.user_current_context===null || user.user_current_context===undefined) ? greeting.unknown(user.user_name) : greeting.known(user.user_name, user.user_current_context))
 
     }).catch((err) => {
-      console.log('user request not valid')
+      console.log('err: user request not valid')
     })
   },
   context: (user_slack_id) => {
@@ -113,23 +111,21 @@ module.exports = {
         }
       })
     }).catch((err) => {
-      console.log('something went wrong with sending context response')
+      console.log('err: something went wrong with sending context response')
     })
   },
   updateContext: (user_slack_id, context) => {
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
-        // console.log('usr: '+JSON.stringify(usr))
         db.updateUser(user_slack_id, user.user_name, context)
+      }).catch((err) => {
+      console.log('err: context could not be updated')
       })
-    }).catch((err) => {
-      console.log('context could not be updated')
     })
   }
 }
 
-let addUserName = (user, slack_id) => {
-
+let addUserDetails = (user, slack_id) => {
   return new Promise((resolve, reject) => {
 
     getSlackUserInfo(slack_id).then((info) => {
@@ -157,7 +153,7 @@ let addUserName = (user, slack_id) => {
         }
       }
       else{
-        console.log('slack_id not found')
+        console.log('slack_id not found in team')
       }
       resolve(user)
       return user
@@ -167,15 +163,18 @@ let addUserName = (user, slack_id) => {
 
 let getSlackUserInfo = (slack_id) => {
   return new Promise((resolve, reject) => {
+    console.log('sending slack user info request')
     request(
       { 
         method: 'GET',
         uri: 'https://slack.com/api/users.info?token='+config.slack.web_token+'&user='+slack_id
       }
     )
+    .on('error', () => {
+      console.log('error in slack user info request')
+    })
     .on('data', (data) => {
-      // decompressed data as it is received
-      // console.log('decoded chunk: ' + data)
+      console.log('recieved slack user info');
       resolve(JSON.parse(data))
     })
   })

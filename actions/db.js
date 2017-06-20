@@ -7,12 +7,14 @@ module.exports = {
     console.log('get user from db')
     return new Promise((resolve, reject) => {
       pg.connect(process.env.DATABASE_URL, (err, client) => {
-        if (err) throw err
+        if (err){
+          console.log('err: '+err)
+        }
         console.log('Connected to postgres')
 
         // do select
         let str = "SELECT * FROM users WHERE user_slack_id='" + user_slack_id + "';"
-        q(resolve, reject, err, client, str)
+        q(resolve, reject, err, client, str, pg)
 
       })
     })
@@ -27,7 +29,7 @@ module.exports = {
         // do insert
         let str = "INSERT INTO users (user_slack_id, user_name) VALUES ('"+user_slack_id+"', '"+user_name+"');"
 
-        q(resolve, reject, err, client, str)
+        q(resolve, reject, err, client, str, pg)
 
       })
     })
@@ -42,7 +44,7 @@ module.exports = {
         // do insert
         let str = "UPDATE users SET user_name='"+user_name+"', user_current_context="+(user_current_context ? "'"+user_current_context+"'" : null)+" WHERE user_slack_id = '"+user_slack_id+"';"
 
-        q(resolve, reject, err, client, str)
+        q(resolve, reject, err, client, str, pg)
 
       })
     })
@@ -55,12 +57,12 @@ module.exports = {
     return new Promise((resolve, reject) => {
       pg.connect(process.env.DATABASE_URL, (err, client) => {
         if (err) throw err
-        console.log('Connected to postgres')
+        console.log('Connected to db client')
 
         // do insert
         let str = "UPDATE users SET user_company_domain = '"+user_company_domain+"', user_company_type='"+user_company_type+"', user_company_location='"+user_company_location+"', user_company_size='"+user_company_size+"', user_office_prize='"+user_office_prize+"' WHERE user_slack_id = '"+user_slack_id+"';"
 
-        q(resolve, reject, err, client, str)
+        q(resolve, reject, err, client, str, pg)
 
       })
     })
@@ -70,13 +72,17 @@ module.exports = {
 
 
 
-let q = (resolve, reject, err, client, str) => {
+let q = (resolve, reject, err, client, str, pg) => {
   client.query(str)
     .on('error', (error) => {
       console.log('db: '+error)
+      client.end()
+      pg.end()
     })
     .on('drain', () => {
-      client.end.bind(client)
+      console.log('queries executed')
+      client.end()
+      pg.end()
     })
     .on('row', (row) => {
       // console.log('Data: '+JSON.stringify(row))
@@ -84,10 +90,17 @@ let q = (resolve, reject, err, client, str) => {
         console.log('empty db response')
         resolve(null)
       }
-      resolve(row)
+      else{
+        console.log('responding with db data')
+        resolve(row)
+      }
+      client.end()
+      pg.end()
     })
     .on('end', () => {
       console.log("db client was disconnected.")
       resolve(null)
+      client.end()
+      pg.end()
     })
 }
