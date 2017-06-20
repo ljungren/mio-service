@@ -173,7 +173,7 @@ let typing = (typing, data) => {
 }
 
 //get response or action based on classified intents
-let getResponse = (action, context, param1=null, param2=null) => {
+let getResponse = (action, context, slack_id=null) => {
     switch(action){
     case 'contact':
       console.log('contact info requested')
@@ -185,37 +185,35 @@ let getResponse = (action, context, param1=null, param2=null) => {
       break
     case 'contact_text':
       console.log('contact info requested')
-      return new Promise((resolve, reject) => {
-        resolve(actions.contact(context))
-      })
+      return getContactMess(slack_id)
       break
     case 'next':
       console.log('new search requested')
-      return getOfficeMess(param1, 'One sec...', 'Go on and get in touch! :+1:')
+      return getOfficeMess(slack_id, 'One sec...', 'Go on and get in touch :+1:')
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
-      return getIntroMess(param1)
+      return getIntroMess(slack_id)
       break
     case 'office_find':
       //user searched for office
       console.log('user wants to find office')
-      return getContextMess(param1)
+      return getContextMess(slack_id)
       break
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      return getOfficeMess(param1, 'Got it! checking...', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
+      return getOfficeMess(slack_id, 'Got it! checking...', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
       break
     case 'relevance_ask':
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
-        resolve("Just trust mo ok? :wink:")
+        resolve("Just trust me ok? :wink: :heart: :kiss-heart:")
       })
       break
     case 'search_again':
       console.log('searched office again')
-      return getOfficeMess(param1, "Hang on! I'll check...", 'Go on and give them a call! :slightly_smiling_face:')
+      return getOfficeMess(slack_id, "Hang on! I'll check...", "Why not go on and give them a call? :slightly_smiling_face:")
       break
     default:
       console.log('no specific action, responding with fallback')
@@ -251,9 +249,17 @@ let getOfficeMess = (id, str1, str2) => {
       let newContext = newObject.attachments[0].callback_id
       resolve(newObject)
       actions.updateContext(id, newContext)
-      delay(8000).then(() => {
+      delay(10000).then(() => {
         comm.submitMessage(str2, id)
       })
+    })
+  })
+}
+
+let getContactMess = (id) => {
+  return new Promise((resolve, reject) => {
+    actions.getContext(id).then((currentContext) => {
+      resolve(actions.contact(currentContext).text)
     })
   })
 }
