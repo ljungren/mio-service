@@ -1,8 +1,7 @@
 'use strict'
 
 const WebClient = require('@slack/client').WebClient,
-request = require('request'),
-config = require('./config.js')
+request = require('request')
 
 // declare web client
 let web
