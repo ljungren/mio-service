@@ -92,7 +92,7 @@ module.exports = {
       })
     })
   },
-  intro: (user) => {
+  introMess: (user) => {
     return new Promise((resolve, reject) => {
       console.log('sending personalized intro response')
       resolve((user.user_current_context===null || user.user_current_context===undefined) ? greeting.unknown(user.user_name) : greeting.known(user.user_name, user.user_current_context))
@@ -101,7 +101,7 @@ module.exports = {
       console.log('err: user request not valid')
     })
   },
-  context: (user_slack_id) => {
+  contextMess: (user_slack_id) => {
     return new Promise((resolve, reject) => {
       db.getUser(user_slack_id).then((user) => {
         if(user){
@@ -120,6 +120,17 @@ module.exports = {
       }).catch((err) => {
       console.log('err: context could not be updated')
       })
+    })
+  },
+  getContext: (user_slack_id) => {
+    return new Promise((resolve, reject) => {
+      db.getUser(user_slack_id).then((user) => {
+        if(user){
+          resolve(user.user_current_context)
+        }
+      })
+    }).catch((err) => {
+      console.log('err: something went wrong with retreiving context')
     })
   }
 }
