@@ -74,7 +74,7 @@ service.post('/webhook', (req,res,next) => {
       console.log('sending office suggestion')
       comm.submitRichMessage(response, data.originalRequest.data.event.channel).then((ok) => {
         //return fulfillment response to api.ai
-        return res.json({speech: 'what do you think?', source: "slack"})
+        return res.json({speech: 'What do you think?', source: "slack"})
       })
     }
     else{
@@ -208,7 +208,7 @@ let getResponse = (action, context, slack_id=null) => {
     case 'relevance_ask':
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
-        resolve("Just trust me ok? :wink: :heart: :kiss-heart:")
+        resolve("Just trust me ok? :wink: :heart:")
       })
       break
     case 'search_again':
@@ -228,6 +228,15 @@ let getIntroMess = (slack_id) => {
     actions.identify(slack_id).then((user)=>{
       actions.introMess(user).then((response) => {
         resolve(response)
+        if(response.charAt(0)==='H'){
+          delay(10000).then(() => {
+            comm.submitMessage("It's not as complicated as it sounds, promise :wink:", slack_id)
+          }).then(() => {
+            delay(5000).then(() => {
+              comm.submitMessage('I am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
+            })
+          })
+        }
       })
     })
   })
@@ -249,9 +258,14 @@ let getOfficeMess = (id, str1, str2) => {
       let newContext = newObject.attachments[0].callback_id
       resolve(newObject)
       actions.updateContext(id, newContext)
-      delay(10000).then(() => {
+      delay(15000).then(() => {
         comm.submitMessage(str2, id)
       })
+      // .then(()=>{
+      //   delay(10000).then(() => {
+      //     comm.submitMessage('', id)
+      //   })
+      // })
     })
   })
 }
