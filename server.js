@@ -208,7 +208,7 @@ let getResponse = (action, context, param1=null, param2=null) => {
     case 'location_search':
       //user searched for office
       console.log('searched location')
-      return getOffice(param1, context, 'Got it! checking...', '', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
+      return getOffice(param1, context, 'Got it! checking...', 'Well?', 'If you like it, you should contact them for getting more detailed information. Or is it something that you would prefer different?')
       break
     case 'relevance_ask':
       console.log('relevance was asked')
@@ -250,10 +250,9 @@ let getOffice = (id, context, str1, str2, str3) => {
   comm.submitMessage(str1, id)
   let newObject = actions.showNext(context)
   let newContext = newObject.attachments[0].callback_id
-  console.log('newContxt: '+ newContext);
   actions.updateContext(id, newContext).then(()=>{
     comm.submitMessage(str2, id).then(()=>{
-      delay(2000).then(()=>{
+      delay(2000).then((ok)=>{
         comm.submitMessage(str3, id)
       })
     })
