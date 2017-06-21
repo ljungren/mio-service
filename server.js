@@ -312,7 +312,7 @@ let getContactMess = (id) => {
 
 let giveContextExample = (slack_id) => {
   delay(3000).then(() => {
-    comm.submitMessage("_You can for example ask about why and how this office is a good option, the social connections, price etc. Or tell me how you would like it to be different._", slack_id)
+    comm.submitMessage("_You can for example ask about why and how this office is a good option, who works there, price etc. Or tell me how you would like it to be different._", slack_id)
   })
 }
 
