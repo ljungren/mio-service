@@ -93,10 +93,10 @@ service.post('/interaction', (req,res,next) => {
   let id = data.user.id
   console.log('button interaction: '+ context + ': ' + action)
 
-  let response = getResponse(action, context, id)
-  return res.status(200).send(response)
+  getResponse(action, context, id).then((response)=>{
+    return res.status(200).send(response)
+  })
 })
-
 
 //start Server
 const server = service.listen((process.env.PORT || 9000), () => {
@@ -132,17 +132,17 @@ let handleEvent = (data) => {
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      // getIntroMess(data.event.user.id).then((response) => {
-      //   comm.submitMessage(response, data.event.user.id)
-      // }).then(()=>{
+      getIntroMess(data.event.user.id).then((response) => {
+        comm.submitMessage(response, data.event.user.id)
+      }).then(()=>{
         comm.openDm(data.event.user.id)
-      // })
+      })
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
-      getIntroMess(data.event.user).then((response) => {
-        comm.submitMessage(response, data.event.channel)
-      })
+      // getIntroMess(data.event.user).then((response) => {
+      //   comm.submitMessage(response, data.event.channel)
+      // })
     }
     else if(data.event.type==='message'){
       //send message as req to to api.ai for intent classification.
@@ -177,19 +177,23 @@ let getResponse = (action, context, slack_id=null) => {
     switch(action){
     case 'contact':
       console.log('contact info requested')
-      return actions.contact(context)
+      return new Promise((resolve, reject) => {
+        resolve(actions.contact(context))
+      })
       break
     case 'more':
       console.log('more info requested')
-      return actions.moreInfo(context)
-      break
-    case 'contact_text':
-      console.log('contact info requested')
-      return getContactMess(slack_id)
+      return new Promise((resolve, reject) => {
+        resolve(actions.moreInfo(context))
+      })
       break
     case 'next':
       console.log('new search requested')
       return getOfficeMess(slack_id, 'One sec...', 'How do you like it? :+1:')
+      break
+    case 'contact_text':
+      console.log('contact info requested')
+      return getContactMess(slack_id)
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
@@ -230,10 +234,10 @@ let getIntroMess = (slack_id) => {
         resolve(response)
         if(response.charAt(0)==='H'){
           delay(5000).then(() => {
-            comm.submitMessage("It's not as complicated as it sounds, promise :wink:", slack_id)
+            comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
           }).then(() => {
             delay(2000).then(() => {
-              comm.submitMessage('I am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
+              comm.submitMessage('--------\n\nI am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
             })
           })
         }
