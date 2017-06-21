@@ -132,11 +132,11 @@ let handleEvent = (data) => {
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
       console.log('a new user has joined')
-      getIntroMess(data.event.user.id).then((response) => {
-        comm.submitMessage(response, data.event.user.id)
-      }).then(()=>{
+      // getIntroMess(data.event.user.id).then((response) => {
+      //   comm.submitMessage(response, data.event.user.id)
+      // }).then(()=>{
         comm.openDm(data.event.user.id)
-      })
+      // })
     }
     else if(data.event.type==='im_open'){
       console.log('a DM channel was opened')
@@ -189,7 +189,7 @@ let getResponse = (action, context, slack_id=null) => {
       break
     case 'next':
       console.log('new search requested')
-      return getOfficeMess(slack_id, 'One sec...', 'Go on and get in touch :+1:')
+      return getOfficeMess(slack_id, 'One sec...', 'How do you like it? :+1:')
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
@@ -213,7 +213,7 @@ let getResponse = (action, context, slack_id=null) => {
       break
     case 'search_again':
       console.log('searched office again')
-      return getOfficeMess(slack_id, "Hang on! I'll check...", "Why not go on and give them a call? :slightly_smiling_face:")
+      return getOfficeMess(slack_id, "Hang on! I'll check...", "What do you think? :slightly_smiling_face:")
       break
     default:
       console.log('no specific action, responding with fallback')
@@ -229,10 +229,10 @@ let getIntroMess = (slack_id) => {
       actions.introMess(user).then((response) => {
         resolve(response)
         if(response.charAt(0)==='H'){
-          delay(10000).then(() => {
+          delay(5000).then(() => {
             comm.submitMessage("It's not as complicated as it sounds, promise :wink:", slack_id)
           }).then(() => {
-            delay(5000).then(() => {
+            delay(2000).then(() => {
               comm.submitMessage('I am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
             })
           })
@@ -258,9 +258,9 @@ let getOfficeMess = (id, str1, str2) => {
       let newContext = newObject.attachments[0].callback_id
       resolve(newObject)
       actions.updateContext(id, newContext)
-      delay(15000).then(() => {
-        comm.submitMessage(str2, id)
-      })
+      // delay(10000).then(() => {
+      //   comm.submitMessage(str2, id)
+      // })
       // .then(()=>{
       //   delay(10000).then(() => {
       //     comm.submitMessage('', id)
