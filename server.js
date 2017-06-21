@@ -88,12 +88,14 @@ service.post('/webhook', (req,res,next) => {
 service.post('/interaction', (req,res,next) => {
   // console.log('payload:'+ JSON.stringify(req.body.payload))
   let data = JSON.parse(req.body.payload)
+  // let data = req.body.payload
   let action = data.actions[0].value
   let context = data.callback_id
   let id = data.user.id
   console.log('button interaction: '+ context + ': ' + action)
 
   getResponse(action, context, id).then((response)=>{
+    response['as_user'] = true
     return res.status(200).send(response)
   })
 })
@@ -168,7 +170,7 @@ let typing = (typing, channel) => {
   }
   else{
     console.log('stop typing')
-    rtm.connected ? Promise.resolve(rtm.sendMessage('', data.event.channel)).catch(e => console.log('empty rtm mess ok')) : rtm.reconnect()
+    rtm.connected ? Promise.resolve(rtm.sendMessage('', channel)).catch(e => console.log('empty rtm mess ok')) : rtm.reconnect()
   }
 }
 
@@ -255,7 +257,7 @@ let doIntroAddOn = (slack_id) => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
   }).then(() => {
     delay(2000).then(() => {
-      comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can pretend to serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
+      comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
     })
   })
 }
