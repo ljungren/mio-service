@@ -74,7 +74,12 @@ service.post('/webhook', (req,res,next) => {
       console.log('sending office suggestion')
       comm.submitRichMessage(response, data.originalRequest.data.event.channel).then((ok) => {
         //return fulfillment response to api.ai
-        return res.json({speech: 'What do you think?', source: "slack"})
+        res.json({speech: 'What do you think?', source: "slack"})
+
+        if(action==='location_search'){
+          //first search, give onboarding example
+          giveContextExample(user_slack_id)
+        }
       })
     }
     else{
@@ -136,10 +141,7 @@ let handleEvent = (data) => {
       console.log('a new user has joined')
       getIntroMess(data.event.user.id).then((response) => {
         comm.submitMessage(response, data.event.user.id)
-      }).then(()=>{
         comm.openDm(data.event.user.id)
-      }).then(()=>{
-        giveContextExample(data.event.user.id)
       })
     }
     else if(data.event.type==='im_open'){
@@ -309,8 +311,8 @@ let getContactMess = (id) => {
 }
 
 let giveContextExample = (slack_id) => {
-  delay(4000).then(() => {
-    comm.submitMessage("--------\n\n~You can for example ask about why and how this office is a good option, the social connections, price etc. Or tell me how you would like instead.~", slack_id)
+  delay(3000).then(() => {
+    comm.submitMessage("_You can for example ask about why and how this office is a good option, the social connections, price etc. Or tell me how you would like it to be different._", slack_id)
   })
 }
 
