@@ -1,9 +1,9 @@
 module.exports = {
   unknown: (name=null) => {
-    return "Hello"+(name ? " " + capFirst(name) : " friend")+"! My name is Mio. \n\nI was made as a thesis experiment to see if corporate ambitions of profit and user experience can be aligned with ambitions of sustainable development. I can help software companies like you to find an optimal environment to base your operations, in terms of social connections. I strive towards global sustainability goals, as in prioritizing locations in less urban areas. My suggestions are just static examples, but for now, please pretend with me that I consume data from multiple social networks and geographical open data to find custom locations for you."
+    return "Hello"+(name ? " " + capFirst(name) : " friend")+"! My name is Mio. \n\nI was made as a thesis experiment to see if corporate ambitions of profit and user experience can be aligned with ambitions of sustainable development. I can help software companies like you to find an optimal environment to base your operations in Sweden, in terms of social connections. I strive towards global sustainability goals, as in prioritizing locations in less urban areas. My suggestions are just static examples, but for now, please pretend with me that I consume data from multiple social networks and geographical open data to find custom locations for you."
   },
   known: (name=null, context=null) => {
-    return "What's up"+(name ? " " + capFirst(name) : "")+"? have you contacted"+(context ? " " + getName(context) : " an office")+" yet? or would you like to continue looking for an office?"
+    return "What's up"+(name ? " " + capFirst(name) : "")+"? have you contacted"+(context ? " " + getName(context) : " an office")+" yet? or would you like to continue searching for an office?"
   }
 }
 

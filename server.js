@@ -127,7 +127,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
 
 // Functions
 let handleEvent = (data) => {
-    typing(true, data)    
+    typing(true, data.event.channel)    
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
@@ -152,18 +152,18 @@ let handleEvent = (data) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           comm.submitMessage(response, data.event.channel).then((ok) => {
-            typing(false, data)
+            typing(false, data.event.channel)
           })
         }
       })
     }
 }
 
-let typing = (typing, data) => {
+let typing = (typing, channel) => {
   if(typing){
     console.log('start typing')
-    rtm.connected ? rtm.sendTyping(data.event.channel) : Promise.resolve(rtm.reconnect()).then(()=>{
-      rtm.sendTyping(data.event.channel)
+    rtm.connected ? rtm.sendTyping(channel) : Promise.resolve(rtm.reconnect()).then(()=>{
+      rtm.sendTyping(channel)
     })
   }
   else{
@@ -212,7 +212,15 @@ let getResponse = (action, context, slack_id=null) => {
     case 'relevance_ask':
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
-        resolve("Just trust me ok? :wink: :heart:")
+        //respond with context aware information
+        resolve("Just trust me ok? :wink:")
+      })
+      break
+    case 'practical_ask':
+      console.log('relevance was asked')
+      return new Promise((resolve, reject) => {
+        //respond with specific location, rent and space
+        resolve("That's just details :wink:")
       })
       break
     case 'search_again':
@@ -233,15 +241,21 @@ let getIntroMess = (slack_id) => {
       actions.introMess(user).then((response) => {
         resolve(response)
         if(response.charAt(0)==='H'){
-          delay(5000).then(() => {
-            comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
-          }).then(() => {
-            delay(2000).then(() => {
-              comm.submitMessage('--------\n\nI am just a prototype, but I can learn about your company and discuss your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
-            })
-          })
+          // get if user is prescent
+          doIntroAddOn(slack_id)
         }
       })
+    })
+  })
+}
+
+// on event of user becomes prescent and don't have current context
+let doIntroAddOn = (slack_id) => {
+  delay(10000).then(() => {
+    comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
+  }).then(() => {
+    delay(2000).then(() => {
+      comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can pretend to serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
     })
   })
 }
@@ -260,7 +274,15 @@ let getOfficeMess = (id, str1, str2) => {
     actions.getContext(id).then((prevContext) => {
       let newObject = actions.showNext(prevContext)
       let newContext = newObject.attachments[0].callback_id
-      resolve(newObject)
+      if(prevContext==='lounge_action'){
+        comm.submitMessage("Unfourtunately, I don't have more example locations. But please pretend that I keep giving you new adapted suggestions, even though I don't :angel:", id).then(() => {
+          resolve(newObject)
+        })
+      }
+      else{
+        resolve(newObject)
+      }
+      
       actions.updateContext(id, newContext)
       // delay(10000).then(() => {
       //   comm.submitMessage(str2, id)
