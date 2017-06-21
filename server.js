@@ -215,14 +215,14 @@ let getResponse = (action, context, slack_id=null) => {
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
         //respond with context aware information
-        resolve("Just trust me ok? :wink:")
+        resolve("_Here I will give information about the relevant people, companies and community etc for the current office context_")
       })
       break
     case 'practical_ask':
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
         //respond with specific location, rent and space
-        resolve("That's just details :wink:")
+        resolve("_Here I will tell you practical details_")
       })
       break
     case 'search_again':
