@@ -138,6 +138,8 @@ let handleEvent = (data) => {
         comm.submitMessage(response, data.event.user.id)
       }).then(()=>{
         comm.openDm(data.event.user.id)
+      }).then(()=>{
+        giveContextExample(data.event.user.id)
       })
     }
     else if(data.event.type==='im_open'){
@@ -222,7 +224,7 @@ let getResponse = (action, context, slack_id=null) => {
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
         //respond with specific location, rent and space
-        resolve("_Here I will tell you practical details_")
+        resolve("_Here I will tell you practical details about the current office context_")
       })
       break
     case 'search_again':
@@ -303,6 +305,12 @@ let getContactMess = (id) => {
     actions.getContext(id).then((currentContext) => {
       resolve(actions.contact(currentContext).text)
     })
+  })
+}
+
+let giveContextExample = (slack_id) => {
+  delay(4000).then(() => {
+    comm.submitMessage("--------\n\n~You can for example ask about why and how this office is a good option, the social connections, price etc. Or tell me how you would like instead.~", slack_id)
   })
 }
 
