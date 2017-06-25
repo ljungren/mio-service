@@ -21,16 +21,6 @@ module.exports = {
         },
         sessionId: data.event.user
       }
-        // contexts:[
-        //   { 
-        //     name: 'weather', 
-        //     parameters: {
-        //       city: 'London'
-        //     }, 
-        //     lifespan: 4
-        //   }
-        // ], 
-
       request({
         url: "https://api.api.ai/v1/query?v=20150910",
         method: "POST",
@@ -49,11 +39,8 @@ module.exports = {
           if(body.status.code===200){
             console.log('request to api.ai successful!')
             // console.log('api.ai server responded with:', body)
-
-            //update current contexts, etc
-
             //return slack response
-            resolve(body.result.fulfillment.speech)
+            resolve([body.result.fulfillment.speech, body.result.contexts])
           }
           else{
             return console.log('status code: '+body.status.code+': '+body.status.errorDetails);

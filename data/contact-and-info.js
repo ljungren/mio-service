@@ -1,7 +1,9 @@
 module.exports = {
   sliperiet: {
     contact: 'You can contact Sliperiet at <mailto:sliperiet@umu.se|sliperiet@umu.se> or <tel:+46907865000|090 786 50 00>',
-    info: '*I found 6 companies and 48 persons in this region that could be of interest to your company profile. Description:*\nSliperiet is a creative hub, research and innovation centre, event facility, maker space and a part of Umeå University at Umeå Arts Campus. Get in touch with us to collaborate, use our facilities, book an event, or enquire about office space.'
+    info: '*I found 6 companies and 48 persons in this region that could be of interest to your company profile. Description:*\nSliperiet is a creative hub, research and innovation centre, event facility, maker space and a part of Umeå University at Umeå Arts Campus. Get in touch with us to collaborate, use our facilities, book an event, or enquire about office space.',
+    relevance: '',
+    practical: ''
   },
   northern: {
     contact: 'You can contact The Great Northern at <mailto:phil@thegreatnorthern.org|phil@thegreatnorthern.org> or <tel:+46704339904|0704 33 99 04>',

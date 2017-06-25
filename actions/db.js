@@ -66,6 +66,38 @@ module.exports = {
 
       })
     })
+  },
+  updateUserSession: (user_slack_id, user_session_contexts) => {
+    console.log('update user session contexts in db')
+    return new Promise((resolve, reject) => {
+      pg.connect(process.env.DATABASE_URL, (err, client) => {
+        if (err) throw err
+        console.log('Connected to postgres')
+
+        // console.log(JSON.stringify(user_session_contexts))
+        // do insert
+        let str = "UPDATE users SET user_session_contexts='"+JSON.stringify(user_session_contexts)+"' WHERE user_slack_id = '"+user_slack_id+"';"
+
+        q(resolve, reject, err, client, str, pg)
+
+      })
+    })
+  },
+  updateLatestMessage: (user_slack_id, user_latest_message) => {
+    console.log('update user latest message in db')
+    return new Promise((resolve, reject) => {
+      pg.connect(process.env.DATABASE_URL, (err, client) => {
+        if (err) throw err
+        console.log('Connected to postgres')
+
+        // console.log(JSON.stringify(user_latest_message))
+        // do insert
+        let str = "UPDATE users SET user_latest_message='"+JSON.stringify(user_latest_message)+"' WHERE user_slack_id = '"+user_slack_id+"';"
+
+        q(resolve, reject, err, client, str, pg)
+
+      })
+    })
   }
 }
 

@@ -9,7 +9,6 @@ const express  = require('express'),
   CLIENT_EVENTS = require('@slack/client').CLIENT_EVENTS,
   // apiai = require('apiai'),
   pg = require('pg'),
-  db = require('./actions/db.js'),
   actions = require('./actions/actions.js'),
   comm = require('./comm.js')
 
@@ -152,12 +151,19 @@ let handleEvent = (data) => {
     }
     else if(data.event.type==='message'){
       //send message as req to to api.ai for intent classification.
+      actions.saveLatestMessage(data.event.user, data)
+
       console.log('passing message to api.ai for intent classification')
-      comm.intentClassification(data).then((response)=> {
-        // console.log('intentClassification response: '+response)
+      comm.intentClassification(data).then((response, contexts)=> {
+        console.log('intentClassification response: '+response)
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
-          comm.submitMessage(response, data.event.channel).then((ok) => {
+          //update current contexts
+          actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
+            console.log('session contexts were updated')
+          })
+          //pass back response to slack
+          comm.submitMessage(response[0], data.event.channel).then((ok) => {
             typing(false, data.event.channel)
           })
         }
@@ -177,6 +183,17 @@ let typing = (typing, channel) => {
     rtm.connected ? Promise.resolve(rtm.sendMessage('', channel)).catch(e => console.log('empty rtm mess ok')) : rtm.reconnect()
   }
 }
+
+
+/*
+************************************************************************
+************************************************************************
+************************************************************************
+Refactor what's below to separate module at some point...
+************************************************************************
+************************************************************************
+************************************************************************
+*/
 
 //get response or action based on classified intents
 let getResponse = (action, context, slack_id=null) => {
@@ -233,8 +250,12 @@ let getResponse = (action, context, slack_id=null) => {
       console.log('searched office again')
       return getOfficeMess(slack_id, "Hang on! I'll check...", "What do you think? :slightly_smiling_face:")
       break
+    case 'main_fallback':
+      console.log('main fallback triggered')
+      return actions.fallbackMess(slack_id)
+      break
     default:
-      console.log('no specific action, responding with fallback')
+      console.log('no specific action on fulfillment req, responding with fallback')
       return new Promise((resolve, reject) => {
         resolve("Sorry, I don't understand quite understand :confused:")
       })
@@ -288,7 +309,6 @@ let getOfficeMess = (id, str1, str2) => {
       else{
         resolve(newObject)
       }
-      
       actions.updateContext(id, newContext)
       // delay(10000).then(() => {
       //   comm.submitMessage(str2, id)
@@ -323,5 +343,3 @@ let delay = (duration) => {
     }, duration)
   })
 }
-
-
