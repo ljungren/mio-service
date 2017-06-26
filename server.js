@@ -238,10 +238,13 @@ let getResponse = (action, context, slack_id=null) => {
       return getContactMess(slack_id)
       break
     case 'smalltalk.greetings.hello':
-      console.log('user said hello')      
-      let intr = getIntroMess(slack_id)
-      intr.charAt(0)==='H' ? doIntroAddOn(slack_id) : console.log('\n');
-      return intr
+      console.log('user said hello')
+      return new Promise((resolve, reject) => {
+        getIntroMess(slack_id).then((intr)=>{
+          intr.charAt(0)==='H' ? doIntroAddOn(slack_id) : console.log('\n');
+          resolve(intr)
+        })
+      })
       break
     case 'office_find':
       //user searched for office
