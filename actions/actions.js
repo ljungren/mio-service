@@ -164,13 +164,29 @@ module.exports = {
             db.getUser(session_id).then((user)=>{
               console.log('RESENDING LATEST MESSAGE')
               if(user){
-                comm.intentClassification(user.user_latest_message).then((response)=> {
-                  // console.log('intentClassification response: '+response[0])
-                  if(!(response===null || response===undefined)){
-                    console.log('sending api.ai response to slack')
-                    resolve(response[0])
-                  }
-                })
+                  request(
+                    { 
+                      method: 'POST',
+                      url: 'http://localhost:9000/message',
+                      json:true,
+                      body: user.user_latest_message
+                    }
+                  )
+                  .on('error', () => {
+                    console.log('error in slack user info request')
+                  })
+                  .on('data', (data) => {
+                    console.log('recieved slack user info')
+                    console.log(data)
+                    resolve(data)
+                  })
+                // comm.intentClassification(user.user_latest_message).then((response)=> {
+                //   // console.log('intentClassification response: '+response[0])
+                //   if(!(response===null || response===undefined)){
+                //     console.log('sending api.ai response to slack')
+                //     resolve(response[0])
+                //   }
+                // })
               }
             })
           })
