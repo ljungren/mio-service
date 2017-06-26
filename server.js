@@ -171,7 +171,7 @@ let handleEvent = (data) => {
             console.log('sending api.ai response to slack')
             //update current contexts
             if(response==='timeout'){
-              comm.submitMessage('Sorry, I was in sleep mode... What was it you said?', data.event.channel).then((ok) => {
+              comm.submitMessage('Sorry, I was in sleep mode...', data.event.channel).then((ok) => {
                 typing(false, data.event.channel)
               })
             }
@@ -208,7 +208,7 @@ let typing = (typing, channel) => {
 ************************************************************************
 ************************************************************************
 ************************************************************************
-Refactor what's below to separate module at some point...
+Refactor what's below to separate module at some point... also separate webhook from slack API endpoint
 ************************************************************************
 ************************************************************************
 ************************************************************************
@@ -298,7 +298,7 @@ let getIntroMess = (slack_id) => {
 
 // on event of user becomes present and don't have current context
 let doIntroAddOn = (slack_id) => {
-  delay(14000).then(() => {
+  delay(4000).then(() => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
     delay(2000).then(() => {
       comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)

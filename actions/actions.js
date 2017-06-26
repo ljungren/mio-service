@@ -144,6 +144,9 @@ module.exports = {
       console.log('err: something went wrong with updating session in db')
     })
   },
+  restoreSession: (session_id) => {
+    return restoreUserSession(session_id)
+  },
   saveLatestMessage: (slack_id, message) => {
     return new Promise((resolve, reject) => {
       db.updateLatestMessage(slack_id, message).then((ok)=>{
@@ -167,7 +170,7 @@ module.exports = {
               //send latest message again, only if the session restore worked
               db.getUser(session_id).then((user)=>{
                 console.log('RESENDING LATEST MESSAGE')
-                // console.log('user latest message: '+JSON.stringify(user.user_latest_message))
+                console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                 if(user){
                   comm.intentClassification(user.user_latest_message).then((response)=> {
                     // console.log('intentClassification response: '+response[0])
@@ -190,6 +193,38 @@ module.exports = {
       console.log('err: something went wrong with getting session fallback response')
     })
   }
+}
+
+let restoreUserSession = (session_id) => {
+  return new Promise((resolve, reject) => {
+    // get session from db
+    // POST to api.ai and restore session contexts
+    // resolve contexts
+    console.log('session_id: '+session_id);
+    db.getUser(session_id).then((user)=>{
+      console.log('user contexts: '+user.user_session_contexts)
+      request({
+        url: "https://api.api.ai/v1/contexts?sessionId="+session_id,
+        method: "POST",
+        json: true,
+        headers: {
+            "authorization": "Bearer "+process.env.APIAI_TOKEN,
+            "content-type": "application/json; charset=utf-8"
+        },
+        body: user.user_session_contexts
+      },
+      (error, response, body) => {
+        if (error) {
+          return console.error('request to api.ai failed:', error)
+        }
+        else if(body){
+          console.log('session post request to api.ai successful!')
+          console.log('api.ai server responded with:', body.names)
+          resolve(body)
+        }
+      })
+    })
+  })
 }
 
 let addUserDetails = (user, slack_id) => {
@@ -268,36 +303,6 @@ let getUserSessionFromApiAi = (session_id) => {
         //return session
         resolve(body)
       }
-    })
-  })
-}
-
-let restoreUserSession = (session_id) => {
-  return new Promise((resolve, reject) => {
-    // get session from db
-    // POST to api.ai and restore session contexts
-    // resolve contexts
-    db.getUser(session_id).then((user)=>{
-      request({
-        url: "https://api.api.ai/v1/contexts?sessionId="+session_id,
-        method: "POST",
-        json: true,
-        headers: {
-            "authorization": "Bearer "+process.env.APIAI_TOKEN,
-            "content-type": "application/json; charset=utf-8"
-        },
-        body: user.user_session_contexts
-      },
-      (error, response, body) => {
-        if (error) {
-          return console.error('request to api.ai failed:', error)
-        }
-        else if(body){
-          console.log('session post request to api.ai successful!')
-          // console.log('api.ai server responded with:', body)
-          resolve(body)
-        }
-      })
     })
   })
 }
