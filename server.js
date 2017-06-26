@@ -159,9 +159,11 @@ let handleEvent = (data) => {
         if(!(response===null || response===undefined)){
           console.log('sending api.ai response to slack')
           //update current contexts
-          actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
-            console.log('session contexts were updated')
-          })
+          if(response[1].length>0){
+            actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
+              console.log('session contexts were updated')
+            })
+          }
           //pass back response to slack
           comm.submitMessage(response[0], data.event.channel).then((ok) => {
             typing(false, data.event.channel)
