@@ -167,7 +167,7 @@ module.exports = {
                   request(
                     { 
                       method: 'POST',
-                      url: 'http://localhost:9000/message',
+                      url: 'https://mio-service.herokuapp.com/message',
                       json:true,
                       body: user.user_latest_message
                     }
