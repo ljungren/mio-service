@@ -155,19 +155,20 @@ module.exports = {
     return new Promise((resolve, reject) => {
       getUserSessionFromApiAi(session_id).then((user_session_contexts) => {
         if(user_session_contexts instanceof Array && user_session_contexts.length>0){
-        //   resolve(fallback.regular())
-        // }
-        // else{
+          console.log('Sending regular fallback response')
+          resolve(fallback.regular())
+        }
+        else{
           restoreUserSession(session_id, user_session_contexts).then((contexts)=>{
             //send latest message again
             db.getUser(session_id).then((user)=>{
-              console.log('RESENDING LATEST MESSAGE');
+              console.log('RESENDING LATEST MESSAGE')
               if(user){
                 comm.intentClassification(user.user_latest_message).then((response)=> {
-                  console.log('intentClassification response: '+response)
+                  console.log('intentClassification response: '+response[0])
                   if(!(response===null || response===undefined)){
                     console.log('sending api.ai response to slack')
-                    comm.submitMessage(response[0], data.event.channel)
+                    comm.submitMessage(response[0], session_id)
                   }
                 })
               }
