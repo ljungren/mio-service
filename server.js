@@ -173,6 +173,9 @@ let handleEvent = (data) => {
             if(response==='timeout'){
               comm.submitMessage('Sorry, I was in sleep mode...', data.event.channel).then((ok) => {
                 typing(false, data.event.channel)
+                getIntroMess(data.event.user.id).then((response) => {
+                  comm.submitMessage(response, data.event.user.id)
+                })
               })
             }
             else if(response[1].length>0){

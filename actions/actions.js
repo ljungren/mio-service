@@ -163,9 +163,9 @@ module.exports = {
           resolve(fallback.regular())
         }
         else{
-          restoreUserSession(session_id).then((session)=>{
-            let contexts = session.names
-            if(contexts instanceof Array && contexts.length>0){
+          restoreUserSession(session_id).then((contexts)=>{
+            console.log('contexts isArray? '+contexts instanceof Array );
+            if(contexts.length>0){
               console.log('API.AI session was restored')
               //send latest message again, only if the session restore worked
               db.getUser(session_id).then((user)=>{
@@ -211,7 +211,7 @@ let restoreUserSession = (session_id) => {
             "authorization": "Bearer "+process.env.APIAI_TOKEN,
             "content-type": "application/json; charset=utf-8"
         },
-        body: user.user_session_contexts
+        body: JSON.stringify(user.user_session_contexts)
       },
       (error, response, body) => {
         if (error) {
