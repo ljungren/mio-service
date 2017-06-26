@@ -211,7 +211,7 @@ let restoreUserSession = (session_id) => {
             "authorization": "Bearer "+process.env.APIAI_TOKEN,
             "content-type": "application/json; charset=utf-8"
         },
-        body: JSON.stringify(user.user_session_contexts)
+        body: user.user_session_contexts
       },
       (error, response, body) => {
         if (error) {
