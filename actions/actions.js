@@ -159,36 +159,29 @@ module.exports = {
           resolve(fallback.regular())
         }
         else{
-          restoreUserSession(session_id, user_session_contexts).then((contexts)=>{
-            //send latest message again
-            db.getUser(session_id).then((user)=>{
-              console.log('RESENDING LATEST MESSAGE')
-              if(user){
-                  request(
-                    { 
-                      method: 'POST',
-                      url: 'https://mio-service.herokuapp.com/message',
-                      json:true,
-                      body: user.user_latest_message
+          restoreUserSession(session_id).then((session)=>{
+            let contexts = session.names
+            if(contexts instanceof Array && contexts.length>0){
+              console.log('API.AI session was restored')
+              //send latest message again, only if the session restore worked
+              db.getUser(session_id).then((user)=>{
+                console.log('RESENDING LATEST MESSAGE')
+                // console.log('user latest message: '+JSON.stringify(user.user_latest_message))
+                if(user){
+                  comm.intentClassification(user.user_latest_message).then((response)=> {
+                    // console.log('intentClassification response: '+response[0])
+                    if(!(response===null || response===undefined)){
+                      console.log('sending api.ai response to slack')
+                      resolve(response[0])
                     }
-                  )
-                  .on('error', () => {
-                    console.log('error in slack user info request')
                   })
-                  .on('data', (data) => {
-                    console.log('recieved slack user info')
-                    console.log(data)
-                    resolve(data)
-                  })
-                // comm.intentClassification(user.user_latest_message).then((response)=> {
-                //   // console.log('intentClassification response: '+response[0])
-                //   if(!(response===null || response===undefined)){
-                //     console.log('sending api.ai response to slack')
-                //     resolve(response[0])
-                //   }
-                // })
-              }
-            })
+                }
+              })
+            }
+            else{
+              console.log('session was not restored, returning NULL')
+              resolve(null)
+            }
           })
         }
       })
@@ -278,11 +271,11 @@ let getUserSessionFromApiAi = (session_id) => {
   })
 }
 
-let restoreUserSession = (session_id, session_contexts) => {
+let restoreUserSession = (session_id) => {
   return new Promise((resolve, reject) => {
     // get session from db
     // POST to api.ai and restore session contexts
-    // resolve message to be sent
+    // resolve contexts
     db.getUser(session_id).then((user)=>{
       request({
         url: "https://api.api.ai/v1/contexts?sessionId="+session_id,
@@ -292,7 +285,7 @@ let restoreUserSession = (session_id, session_contexts) => {
             "authorization": "Bearer "+process.env.APIAI_TOKEN,
             "content-type": "application/json; charset=utf-8"
         },
-        body: session_contexts
+        body: user.user_session_contexts
       },
       (error, response, body) => {
         if (error) {

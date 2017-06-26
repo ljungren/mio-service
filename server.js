@@ -82,7 +82,7 @@ service.post('/webhook', (req,res,next) => {
       })
     }
     else{
-      return response ? res.json({speech: response, source: "slack"}) : res.json({speech: "Sorry, I cannot reply to this yet :angel: \n", source: "slack"})
+      return response ? res.json({speech: response, source: "slack"}) : res.json({speech: "Sorry, something went wrong :angel: Feeling a bit dizzy... would you mind trying that again? \n", source: "slack"})
     }
   })
 })
@@ -157,7 +157,7 @@ let handleEvent = (data) => {
         console.log('passing message to api.ai for intent classification')
         comm.intentClassification(data).then((response, contexts)=> {
           // console.log('intentClassification response: '+response[0])
-          if(!(response===null || response===undefined)){
+          if(response){
             console.log('sending api.ai response to slack')
             //update current contexts
             if(response[1].length>0){
