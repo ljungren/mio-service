@@ -151,24 +151,26 @@ let handleEvent = (data) => {
     }
     else if(data.event.type==='message'){
       //send message as req to to api.ai for intent classification.
-      actions.saveLatestMessage(data.event.user, data)
+      actions.saveLatestMessage(data.event.user, data).then((ok)=>{
+        console.log('Latest message saved')
 
-      console.log('passing message to api.ai for intent classification')
-      comm.intentClassification(data).then((response, contexts)=> {
-        console.log('intentClassification response: '+response)
-        if(!(response===null || response===undefined)){
-          console.log('sending api.ai response to slack')
-          //update current contexts
-          if(response[1].length>0){
-            actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
-              console.log('session contexts were updated')
-            })
+        console.log('passing message to api.ai for intent classification')
+        comm.intentClassification(data).then((response, contexts)=> {
+          // console.log('intentClassification response: '+response[0])
+          if(!(response===null || response===undefined)){
+            console.log('sending api.ai response to slack')
+            //update current contexts
+            if(response[1].length>0){
+              actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
+                console.log('session contexts were updated')
+                //pass back response to slack
+                comm.submitMessage(response[0], data.event.channel).then((ok) => {
+                  typing(false, data.event.channel)
+                })
+              })
+            }
           }
-          //pass back response to slack
-          comm.submitMessage(response[0], data.event.channel).then((ok) => {
-            typing(false, data.event.channel)
-          })
-        }
+        })
       })
     }
 }

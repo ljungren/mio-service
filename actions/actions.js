@@ -165,16 +165,15 @@ module.exports = {
               console.log('RESENDING LATEST MESSAGE')
               if(user){
                 comm.intentClassification(user.user_latest_message).then((response)=> {
-                  console.log('intentClassification response: '+response[0])
+                  // console.log('intentClassification response: '+response[0])
                   if(!(response===null || response===undefined)){
                     console.log('sending api.ai response to slack')
-                    comm.submitMessage(response[0], session_id)
+                    resolve(response[0])
                   }
                 })
               }
             })
           })
-          resolve('Sorry, I was sleeping...')
         }
       })
     }).catch((err) => {
