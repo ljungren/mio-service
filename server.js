@@ -141,12 +141,11 @@ let handleEvent = (data) => {
       getIntroMess(data.event.user.id).then((response) => {
         comm.submitMessage(response, data.event.user.id)
         comm.openDm(data.event.user.id)
-      }).then(()=>{
-        comm.intentClassification(teamJoinRestoreMess(data)).then((response)=> {
-          if(response){
-            if(response[1].length>0){
+        comm.intentClassification(teamJoinRestoreMess(data)).then((contexts)=> {
+          if(contexts){
+            if(contexts[1].length>0){
               // console.log(JSON.stringify(response[1]))
-              actions.updateSessionContexts(data.event.user.id, response[1]).then((ok)=>{
+              actions.updateSessionContexts(data.event.user.id, contexts[1]).then((ok)=>{
                 console.log('session contexts were updated in db')
               })
             }
@@ -164,7 +163,7 @@ let handleEvent = (data) => {
       //send message as req to to api.ai for intent classification.
       actions.saveLatestMessage(data.event.user, data).then((ok)=>{
         console.log('Latest message saved')
-        
+
         console.log('passing message to api.ai for intent classification')
         comm.intentClassification(data).then((response)=> {
           // console.log('intentClassification response: '+response[0])
@@ -240,7 +239,9 @@ let getResponse = (action, context, slack_id=null) => {
       break
     case 'smalltalk.greetings.hello':
       console.log('user said hello')      
-      return getIntroMess(slack_id)
+      let intr = getIntroMess(slack_id)
+      intr.charAt(0)==='H' ? doIntroAddOn(slack_id) : console.log('\n');
+      return intr
       break
     case 'office_find':
       //user searched for office
@@ -287,20 +288,15 @@ let getIntroMess = (slack_id) => {
     actions.identify(slack_id).then((user)=>{
       actions.introMess(user).then((response) => {
         resolve(response)
-        if(response.charAt(0)==='H'){
-          // get if user is prescent
-          doIntroAddOn(slack_id)
-        }
       })
     })
   })
 }
 
-// on event of user becomes prescent and don't have current context
+// on event of user becomes present and don't have current context
 let doIntroAddOn = (slack_id) => {
   delay(14000).then(() => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
-  }).then(() => {
     delay(2000).then(() => {
       comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
     })
