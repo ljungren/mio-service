@@ -202,7 +202,7 @@ let restoreUserSession = (session_id) => {
     // resolve contexts
     console.log('session_id: '+session_id);
     db.getUser(session_id).then((user)=>{
-      console.log('user contexts: '+user.user_session_contexts)
+      console.log('user contexts: '+JSON.stringify(user.user_session_contexts))
       request({
         url: "https://api.api.ai/v1/contexts?sessionId="+session_id,
         method: "POST",
@@ -220,7 +220,7 @@ let restoreUserSession = (session_id) => {
         else if(body){
           console.log('session post request to api.ai successful!')
           console.log('api.ai server responded with:', body.names)
-          resolve(body)
+          resolve(body.names)
         }
       })
     })
