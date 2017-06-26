@@ -43,7 +43,8 @@ module.exports = {
             resolve([body.result.fulfillment.speech, body.result.contexts])
           }
           else{
-            return console.log('status code: '+body.status.code+': '+body.status.errorDetails);
+            console.log('status code: '+body.status.code+': '+body.status.errorDetails)
+            resolve('timeout')
           }
         }
       })

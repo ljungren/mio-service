@@ -153,24 +153,30 @@ let handleEvent = (data) => {
       //send message as req to to api.ai for intent classification.
       actions.saveLatestMessage(data.event.user, data).then((ok)=>{
         console.log('Latest message saved')
-
-        console.log('passing message to api.ai for intent classification')
-        comm.intentClassification(data).then((response, contexts)=> {
-          // console.log('intentClassification response: '+response[0])
-          if(response){
-            console.log('sending api.ai response to slack')
-            //update current contexts
-            if(response[1].length>0){
-              actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
-                console.log('session contexts were updated')
-                //pass back response to slack
-                comm.submitMessage(response[0], data.event.channel).then((ok) => {
-                  typing(false, data.event.channel)
-                })
+      })
+      console.log('passing message to api.ai for intent classification')
+      comm.intentClassification(data).then((response, contexts)=> {
+        // console.log('intentClassification response: '+response[0])
+        if(response){
+          console.log('sending api.ai response to slack')
+          //update current contexts
+          if(response==='timeout'){
+            delay(3000).then(()=>{
+              comm.submitMessage('What do you think?', data.event.channel).then((ok) => {
+                typing(false, data.event.channel)
               })
-            }
+            })
           }
-        })
+          else if(response[1].length>0){
+            actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
+              console.log('session contexts were updated')
+              //pass back response to slack
+              comm.submitMessage(response[0], data.event.channel).then((ok) => {
+                typing(false, data.event.channel)
+              })
+            })
+          }
+        }
       })
     }
 }
