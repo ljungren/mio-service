@@ -141,6 +141,17 @@ let handleEvent = (data) => {
       getIntroMess(data.event.user.id).then((response) => {
         comm.submitMessage(response, data.event.user.id)
         comm.openDm(data.event.user.id)
+      }).then(()=>{
+        comm.intentClassification(teamJoinRestoreMess(data)).then((response)=> {
+          if(response){
+            if(response[1].length>0){
+              // console.log(JSON.stringify(response[1]))
+              actions.updateSessionContexts(data.event.user.id, response[1]).then((ok)=>{
+                console.log('session contexts were updated in db')
+              })
+            }
+          }
+        })
       })
     }
     else if(data.event.type==='im_open'){
@@ -153,30 +164,29 @@ let handleEvent = (data) => {
       //send message as req to to api.ai for intent classification.
       actions.saveLatestMessage(data.event.user, data).then((ok)=>{
         console.log('Latest message saved')
-      })
-      console.log('passing message to api.ai for intent classification')
-      comm.intentClassification(data).then((response, contexts)=> {
-        // console.log('intentClassification response: '+response[0])
-        if(response){
-          console.log('sending api.ai response to slack')
-          //update current contexts
-          if(response==='timeout'){
-            delay(3000).then(()=>{
-              comm.submitMessage('What do you think?', data.event.channel).then((ok) => {
+        
+        console.log('passing message to api.ai for intent classification')
+        comm.intentClassification(data).then((response)=> {
+          // console.log('intentClassification response: '+response[0])
+          if(response){
+            console.log('sending api.ai response to slack')
+            //update current contexts
+            if(response==='timeout'){
+              comm.submitMessage('Sorry, I was in sleep mode... What was it you said?', data.event.channel).then((ok) => {
                 typing(false, data.event.channel)
               })
-            })
-          }
-          else if(response[1].length>0){
-            actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
-              console.log('session contexts were updated')
-              //pass back response to slack
-              comm.submitMessage(response[0], data.event.channel).then((ok) => {
-                typing(false, data.event.channel)
+            }
+            else if(response[1].length>0){
+              actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
+                console.log('session contexts were updated in db')
+                //pass back response to slack
+                comm.submitMessage(response[0], data.event.channel).then((ok) => {
+                  typing(false, data.event.channel)
+                })
               })
-            })
+            }
           }
-        }
+        })
       })
     }
 }
@@ -288,7 +298,7 @@ let getIntroMess = (slack_id) => {
 
 // on event of user becomes prescent and don't have current context
 let doIntroAddOn = (slack_id) => {
-  delay(10000).then(() => {
+  delay(14000).then(() => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
   }).then(() => {
     delay(2000).then(() => {
@@ -312,7 +322,7 @@ let getOfficeMess = (id, str1, str2) => {
       let newObject = actions.showNext(prevContext)
       let newContext = newObject.attachments[0].callback_id
       if(prevContext==='lounge_action'){
-        comm.submitMessage("Unfourtunately, I don't have more example locations. But please pretend that I keep giving you new adapted suggestions, even though I don't :angel:", id).then(() => {
+        comm.submitMessage("_Unfourtunately, I don't have more example locations. But please pretend that I keep giving you new adapted suggestions, even though I don't_ :angel:", id).then(() => {
           resolve(newObject)
         })
       }
@@ -352,4 +362,21 @@ let delay = (duration) => {
       resolve('ok')
     }, duration)
   })
+}
+
+let teamJoinRestoreMess = (data) => {
+  return {
+    token:data.token,
+    team_id:data.team_id,
+    api_app_id:data.api_app_id,
+    event:{
+      type:"message",
+      user:data.event.user.id,
+      text:"hello"
+    },
+    type:data.type,
+    authed_users:data.authed_users,
+    event_id:data.event_id,
+    event_time:data.event_time
+  }
 }

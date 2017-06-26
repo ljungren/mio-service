@@ -147,6 +147,7 @@ module.exports = {
   saveLatestMessage: (slack_id, message) => {
     return new Promise((resolve, reject) => {
       db.updateLatestMessage(slack_id, message).then((ok)=>{
+        restoreUserSession(slack_id)
         resolve(ok)
       })
     })
