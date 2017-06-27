@@ -182,7 +182,7 @@ module.exports = {
                         resolve(response[0])
                       }
                     }).then(()=>{
-                      restoreUserSession(session_id).then((contexts)
+                      restoreUserSession(session_id)
                     })
                   }
                   else{
