@@ -70,8 +70,8 @@ service.post('/webhook', (req,res,next) => {
   getResponse(action, null, user_slack_id).then((response) => {
     if(response==='timeout'){
       comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
-        getIntroMess(data.event.user.id).then((response) => {
-          comm.submitMessage(response, data.event.user.id)
+        getIntroMess(user_slack_id).then((respo) => {
+          comm.submitMessage(respo, data.originalRequest.data.event.channel)
         })
       })
     }
@@ -185,7 +185,7 @@ let handleEvent = (data) => {
             //     })
             //   })
             // }
-            else if(response[1].length>0){
+            if(response[1].length>0){
               actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
                 console.log('session contexts were updated in db')
                 //pass back response to slack
