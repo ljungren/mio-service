@@ -170,15 +170,15 @@ module.exports = {
                 //send latest message again, only if the session restore worked
                 db.getUser(session_id).then((user)=>{
                   console.log('RISSUING LATEST MESSAGE')
-                  console.log('user latest message: '+JSON.stringify(user.user_latest_message))
+                  // console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                   if(user.user_latest_message){
                     comm.intentClassification(user.user_latest_message).then((response)=> {
-                      console.log('intentClassification CONTEXT: '+JSON.stringify(response[1]))
-                      console.log('intentClassification RESPONSE: '+response[0])
+                      // console.log('intentClassification CONTEXT: '+JSON.stringify(response[1]))
+                      // console.log('intentClassification RESPONSE: '+response[0])
                       if(response[0] && response[1] instanceof Array && response[1].length>0){
                         //check if response is correct
                         console.log('sending api.ai response to slack')
-                        console.log('session_id: '+session_id)
+                        // console.log('session_id: '+session_id)
                         db.updateUserSession(session_id, response[1]).then(()=>{
                           console.log('contexts updated in db')
                           restoreUserSession(session_id)

@@ -139,8 +139,7 @@ const server = service.listen((process.env.PORT || 9000), () => {
 })
 
 // Functions
-let handleEvent = (data) => {
-    typing(true, data.event.channel)    
+let handleEvent = (data) => {    
     console.log('post from slack, event type: '+data.event.type)
     // console.log('data: '+JSON.stringify(data))
     if(data.event.type==='team_join'){
@@ -167,6 +166,7 @@ let handleEvent = (data) => {
       // })
     }
     else if(data.event.type==='message'){
+      typing(true, data.event.channel)
       //send message as req to to api.ai for intent classification.
       actions.saveLatestMessage(data.event.user, data).then((ok)=>{
         console.log('Latest message saved')
@@ -179,11 +179,13 @@ let handleEvent = (data) => {
             console.log('sending api.ai response to slack')
             //update current contexts
             if(response==='timeout'){
-              comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.channel).then((ok) => {
-                getIntroMess(data.event.user).then((response) => {
-                  comm.submitMessage(response, data.event.channel)
-                })
-              })
+              // comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.channel).then((ok) => {
+              //   getIntroMess(data.event.user).then((response) => {
+              //     comm.submitMessage(response, data.event.channel)
+              //     typing(false, data.event.channel)
+              //   })
+              // })
+              console.log('RESPONSE TIMED OUT')
             }
             else if(response[1].length>0){
               actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
