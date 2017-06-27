@@ -158,13 +158,16 @@ module.exports = {
   fallbackMess: (session_id) => {
     return new Promise((resolve, reject) => {
       getUserSessionFromApiAi(session_id).then((user_session_contexts) => {
-        if(user_session_contexts instanceof Array && user_session_contexts.length>0){
+        if(user_session_contexts.length>0){
           console.log('Sending regular fallback response')
           resolve(fallback.regular())
         }
         else{
           restoreUserSession(session_id).then((contexts)=>{
             console.log('contexts length: '+contexts.length)
+            getUserSessionFromApiAi(session_id).then((user_session_contexts) => {
+              console.log('GET SESSION now again, length: '+user_session_contexts.length);
+            })
             if(contexts.length>0){
               console.log('API.AI session was restored')
               //send latest message again, only if the session restore worked
@@ -172,13 +175,14 @@ module.exports = {
                 console.log('RESENDING LATEST MESSAGE')
                 console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                 if(user){
-                  comm.intentClassification(user.user_latest_message).then((response)=> {
-                    // console.log('intentClassification response: '+response[0])
-                    if(!(response===null || response===undefined)){
-                      console.log('sending api.ai response to slack')
-                      resolve(response[0])
-                    }
-                  })
+                  // comm.intentClassification(user.user_latest_message).then((response)=> {
+                  //   // console.log('intentClassification response: '+response[0])
+                  //   if(!(response===null || response===undefined)){
+                  //     console.log('sending api.ai response to slack')
+                  //     resolve(response[0])
+                  //   }
+                  // })
+                  resolve('POOP')
                 }
               })
             }
