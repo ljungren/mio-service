@@ -165,10 +165,8 @@ module.exports = {
         else{
           restoreUserSession(session_id).then((contexts)=>{
             console.log('contexts length: '+contexts.length)
-            getUserSessionFromApiAi(session_id).then((user_session_contexts) => {
-              console.log('GET SESSION now again, length: '+user_session_contexts.length)
               // if(contexts.length>0){
-              if(user_session_contexts.length>0){
+              if(contexts.length>0){
                 console.log('API.AI session was restored')
                 //send latest message again, only if the session restore worked
                 db.getUser(session_id).then((user)=>{
@@ -176,15 +174,13 @@ module.exports = {
                   console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                   if(user){
                     comm.intentClassification(user.user_latest_message).then((response)=> {
-                      // console.log('intentClassification response: '+response[0])
+                      console.log('intentClassification CONTEXT: '+response[1])
                       if(!(response===null || response===undefined)){
                         console.log('sending api.ai response to slack')
                         db.updateUserSession(response[1]).then(()=>{
                           resolve(response[0])
                         })
                       }
-                    }).then((response)=>{
-                      restoreUserSession(session_id)
                     })
                   }
                   else{
@@ -196,13 +192,15 @@ module.exports = {
                 console.log('session was not restored, returning error')
                 resolve('timeout')
               }
-            })
           })
         }
       })
     }).catch((err) => {
       console.log('err: something went wrong with getting session fallback response')
     })
+  },
+  getUserDmId: (id) => {
+    return findUserDmId(id)
   }
 }
 
@@ -313,6 +311,30 @@ let getUserSessionFromApiAi = (session_id) => {
         // console.log('api.ai server responded with:', body)
         //return session
         resolve(body)
+      }
+    })
+  })
+}
+
+let findUserDmId = (slack_id) => {
+  return new Promise((resolve, reject) => {
+    console.log('sending slack user info request')
+    request(
+      { 
+        method: 'GET',
+        uri: 'https://slack.com/api/im.list?token='+process.env.BOT_TOKEN
+      }
+    )
+    .on('error', () => {
+      console.log('error in slack user info request')
+    })
+    .on('data', (data) => {
+      console.log('recieved slack user info')
+      let ims = JSON.parse(data.ims)
+      for(var i=0;i<ims.length;i++){
+        if(ims[i].user===slack_id){
+          resolve(ims[i].id)
+        }
       }
     })
   })

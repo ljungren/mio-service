@@ -391,6 +391,9 @@ let teamJoinRestoreMess = (data) => {
   }
 
   return new Promise((resolve, reject)=>{
-    resolve(m)
+    actions.getUserDmId(data.event.user.id).then((channelId)=>{
+      m.event.channel = channelId
+      resolve(m)
+    })
   })
 }
