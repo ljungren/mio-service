@@ -164,8 +164,8 @@ module.exports = {
         }
         else{
           restoreUserSession(session_id).then((contexts)=>{
-            console.log('contexts isArray? '+contexts instanceof Array)
-            if(contexts instanceof Array && contexts.length>0){
+            console.log('contexts length: '+contexts.length)
+            if(contexts.length>0){
               console.log('API.AI session was restored')
               //send latest message again, only if the session restore worked
               db.getUser(session_id).then((user)=>{
@@ -200,7 +200,7 @@ let restoreUserSession = (session_id) => {
     // get session from db
     // POST to api.ai and restore session contexts
     // resolve context array
-    console.log('session_id in restore: '+session_id)
+    console.log('session_id restore: '+session_id)
     db.getUser(session_id).then((user)=>{
       console.log('user contexts: '+JSON.stringify(user.user_session_contexts))
       request({
