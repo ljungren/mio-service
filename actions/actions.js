@@ -179,9 +179,11 @@ module.exports = {
                       // console.log('intentClassification response: '+response[0])
                       if(!(response===null || response===undefined)){
                         console.log('sending api.ai response to slack')
-                        resolve(response[0])
+                        db.updateUserSession(response[1]).then(()=>{
+                          resolve(response[0])
+                        })
                       }
-                    }).then(()=>{
+                    }).then((response)=>{
                       restoreUserSession(session_id)
                     })
                   }
