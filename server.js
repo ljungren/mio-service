@@ -141,15 +141,17 @@ let handleEvent = (data) => {
       getIntroMess(data.event.user.id).then((response) => {
         comm.submitMessage(response, data.event.user.id)
         comm.openDm(data.event.user.id)
-        comm.intentClassification(teamJoinRestoreMess(data)).then((contexts)=> {
-          if(contexts){
-            if(contexts[1].length>0){
-              // console.log(JSON.stringify(response[1]))
-              actions.updateSessionContexts(data.event.user.id, contexts[1]).then((ok)=>{
-                console.log('session contexts were updated in db')
-              })
+        teamJoinRestoreMess(data).then((message)=>{
+          comm.intentClassification(message).then((contexts)=> {
+            if(contexts){
+              if(contexts[1].length>0){
+                // console.log(JSON.stringify(response[1]))
+                actions.updateSessionContexts(data.event.user.id, contexts[1]).then((ok)=>{
+                  console.log('session contexts were updated in db')
+                })
+              }
             }
-          }
+          })
         })
       })
     }
@@ -370,7 +372,7 @@ let delay = (duration) => {
 }
 
 let teamJoinRestoreMess = (data) => {
-  return {
+  let m = {
     token:data.token,
     team_id:data.team_id,
     api_app_id:data.api_app_id,
@@ -379,7 +381,7 @@ let teamJoinRestoreMess = (data) => {
       user:data.event.user.id,
       text:"hello",
       ts:"1496236345.367828",
-      channel:"D5BJM9QBY",
+      channel:"",
       event_ts:"1496236345.367828"
     },
     type:data.type,
@@ -387,4 +389,8 @@ let teamJoinRestoreMess = (data) => {
     event_id:data.event_id,
     event_time:data.event_time
   }
+
+  return new Promise((resolve, reject)=>{
+    resolve(m)
+  })
 }

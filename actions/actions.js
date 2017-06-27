@@ -181,6 +181,8 @@ module.exports = {
                         console.log('sending api.ai response to slack')
                         resolve(response[0])
                       }
+                    }).then(()=>{
+                      restoreUserSession(session_id).then((contexts)
                     })
                   }
                   else{
