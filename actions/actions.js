@@ -165,23 +165,25 @@ module.exports = {
         else{
           restoreUserSession(session_id).then((contexts)=>{
             console.log('contexts length: '+contexts.length)
-              // if(contexts.length>0){
               if(contexts.length>0){
                 console.log('API.AI session was restored')
                 //send latest message again, only if the session restore worked
                 db.getUser(session_id).then((user)=>{
                   console.log('RISSUING LATEST MESSAGE')
                   console.log('user latest message: '+JSON.stringify(user.user_latest_message))
-                  if(user){
-                    // comm.intentClassification(user.user_latest_message).then((response)=> {
-                    //   console.log('intentClassification CONTEXT: '+response[1])
-                    //   if(!(response===null || response===undefined)){
-                    //     console.log('sending api.ai response to slack')
-                    //     db.updateUserSession(response[1]).then(()=>{
-                    //       resolve(response[0])
-                    //     })
-                    //   }
-                    // })
+                  if(user.user_latest_message){
+                    comm.intentClassification(user.user_latest_message).then((response)=> {
+                      console.log('intentClassification CONTEXT: '+JSON.stringify(response[1]))
+                      console.log('intentClassification RESPONSE: '+response[0])
+                      if(response[0] && response[1]){
+                        console.log('sending api.ai response to slack')
+                        console.log('session_id: '+session_id)
+                        db.updateUserSession(session_id, response[1]).then(()=>{
+                          console.log('contexts updated in db')
+                        })
+                        resolve(response[0])
+                      }
+                    })
                   }
                   else{
                     resolve('timeout')
