@@ -145,7 +145,7 @@ let handleEvent = (data) => {
           comm.intentClassification(message).then((contexts)=> {
             if(contexts){
               if(contexts[1].length>0){
-                // console.log(JSON.stringify(response[1]))
+                console.log(JSON.stringify(response[1]))
                 actions.updateSessionContexts(data.event.user.id, contexts[1]).then((ok)=>{
                   console.log('session contexts were updated in db')
                 })

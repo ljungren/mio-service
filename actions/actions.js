@@ -173,15 +173,15 @@ module.exports = {
                   console.log('RISSUING LATEST MESSAGE')
                   console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                   if(user){
-                    comm.intentClassification(user.user_latest_message).then((response)=> {
-                      console.log('intentClassification CONTEXT: '+response[1])
-                      if(!(response===null || response===undefined)){
-                        console.log('sending api.ai response to slack')
-                        db.updateUserSession(response[1]).then(()=>{
-                          resolve(response[0])
-                        })
-                      }
-                    })
+                    // comm.intentClassification(user.user_latest_message).then((response)=> {
+                    //   console.log('intentClassification CONTEXT: '+response[1])
+                    //   if(!(response===null || response===undefined)){
+                    //     console.log('sending api.ai response to slack')
+                    //     db.updateUserSession(response[1]).then(()=>{
+                    //       resolve(response[0])
+                    //     })
+                    //   }
+                    // })
                   }
                   else{
                     resolve('timeout')
