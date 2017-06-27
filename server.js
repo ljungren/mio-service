@@ -68,14 +68,14 @@ service.post('/webhook', (req,res,next) => {
   let user_slack_id = data.sessionId
 
   getResponse(action, null, user_slack_id).then((response) => {
-    if(response==='timeout'){
-      comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
-        getIntroMess(user_slack_id).then((respo) => {
-          comm.submitMessage(respo, data.originalRequest.data.event.channel)
-        })
-      })
-    }
-    else if(response.hasOwnProperty('attachments')){
+    // if(response==='timeout'){
+    //   comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
+    //     getIntroMess(user_slack_id).then((respo) => {
+    //       comm.submitMessage(respo, data.originalRequest.data.event.channel)
+    //     })
+    //   })
+    // }
+    if(response.hasOwnProperty('attachments')){
       //send rich message directly to slack client
       console.log('sending office suggestion')
       comm.submitRichMessage(response, data.originalRequest.data.event.channel).then((ok) => {
@@ -178,14 +178,14 @@ let handleEvent = (data) => {
           if(response){
             console.log('sending api.ai response to slack')
             //update current contexts
-            // if(response==='timeout'){
-            //   comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
-            //     getIntroMess(data.event.user.id).then((response) => {
-            //       comm.submitMessage(response, data.event.user.id)
-            //     })
-            //   })
-            // }
-            if(response[1].length>0){
+            if(response==='timeout'){
+              comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
+                getIntroMess(data.event.user.id).then((response) => {
+                  comm.submitMessage(response, data.event.user.id)
+                })
+              })
+            }
+            else if(response[1].length>1){
               actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
                 console.log('session contexts were updated in db')
                 //pass back response to slack
