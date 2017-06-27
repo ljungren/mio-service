@@ -180,6 +180,7 @@ module.exports = {
                         console.log('session_id: '+session_id)
                         db.updateUserSession(session_id, response[1]).then(()=>{
                           console.log('contexts updated in db')
+                          restoreUserSession(session_id)
                         })
                         resolve(response[0])
                       }
