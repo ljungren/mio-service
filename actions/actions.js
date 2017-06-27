@@ -172,7 +172,7 @@ module.exports = {
                 console.log('API.AI session was restored')
                 //send latest message again, only if the session restore worked
                 db.getUser(session_id).then((user)=>{
-                  console.log('RESENDING LATEST MESSAGE')
+                  console.log('RISSUING LATEST MESSAGE')
                   console.log('user latest message: '+JSON.stringify(user.user_latest_message))
                   if(user){
                     comm.intentClassification(user.user_latest_message).then((response)=> {
@@ -182,13 +182,15 @@ module.exports = {
                         resolve(response[0])
                       }
                     })
-                    resolve('POOP')
+                  }
+                  else{
+                    resolve('timeout')
                   }
                 })
               }
               else{
-                console.log('session was not restored, returning NULL')
-                resolve(null)
+                console.log('session was not restored, returning error')
+                resolve('timeout')
               }
             })
           })
