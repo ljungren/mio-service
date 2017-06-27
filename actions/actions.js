@@ -166,30 +166,31 @@ module.exports = {
           restoreUserSession(session_id).then((contexts)=>{
             console.log('contexts length: '+contexts.length)
             getUserSessionFromApiAi(session_id).then((user_session_contexts) => {
-              console.log('GET SESSION now again, length: '+user_session_contexts.length);
+              console.log('GET SESSION now again, length: '+user_session_contexts.length)
+              // if(contexts.length>0){
+              if(user_session_contexts.length>0){
+                console.log('API.AI session was restored')
+                //send latest message again, only if the session restore worked
+                db.getUser(session_id).then((user)=>{
+                  console.log('RESENDING LATEST MESSAGE')
+                  console.log('user latest message: '+JSON.stringify(user.user_latest_message))
+                  if(user){
+                    comm.intentClassification(user.user_latest_message).then((response)=> {
+                      // console.log('intentClassification response: '+response[0])
+                      if(!(response===null || response===undefined)){
+                        console.log('sending api.ai response to slack')
+                        resolve(response[0])
+                      }
+                    })
+                    resolve('POOP')
+                  }
+                })
+              }
+              else{
+                console.log('session was not restored, returning NULL')
+                resolve(null)
+              }
             })
-            if(contexts.length>0){
-              console.log('API.AI session was restored')
-              //send latest message again, only if the session restore worked
-              db.getUser(session_id).then((user)=>{
-                console.log('RESENDING LATEST MESSAGE')
-                console.log('user latest message: '+JSON.stringify(user.user_latest_message))
-                if(user){
-                  // comm.intentClassification(user.user_latest_message).then((response)=> {
-                  //   // console.log('intentClassification response: '+response[0])
-                  //   if(!(response===null || response===undefined)){
-                  //     console.log('sending api.ai response to slack')
-                  //     resolve(response[0])
-                  //   }
-                  // })
-                  resolve('POOP')
-                }
-              })
-            }
-            else{
-              console.log('session was not restored, returning NULL')
-              resolve(null)
-            }
           })
         }
       })
