@@ -302,10 +302,12 @@ let getIntroMess = (slack_id) => {
 
 // on event of user becomes present and don't have current context
 let doIntroAddOn = (slack_id) => {
+  typing(true)
   delay(4000).then(() => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
     delay(2000).then(() => {
       comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
+      typing(false)
     })
   })
 }
@@ -375,7 +377,10 @@ let teamJoinRestoreMess = (data) => {
     event:{
       type:"message",
       user:data.event.user.id,
-      text:"hello"
+      text:"hello",
+      ts:"1496236345.367828",
+      channel:"D5BJM9QBY",
+      event_ts:"1496236345.367828"
     },
     type:data.type,
     authed_users:data.authed_users,
