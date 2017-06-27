@@ -163,6 +163,7 @@ let handleEvent = (data) => {
       //send message as req to to api.ai for intent classification.
       actions.saveLatestMessage(data.event.user, data).then((ok)=>{
         console.log('Latest message saved')
+      }).then(()=>{
 
         console.log('passing message to api.ai for intent classification')
         comm.intentClassification(data).then((response)=> {

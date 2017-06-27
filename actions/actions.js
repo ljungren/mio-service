@@ -150,7 +150,7 @@ module.exports = {
   saveLatestMessage: (slack_id, message) => {
     return new Promise((resolve, reject) => {
       db.updateLatestMessage(slack_id, message).then((ok)=>{
-        restoreUserSession(slack_id)
+        // restoreUserSession(slack_id)
         resolve(ok)
       })
     })
@@ -165,7 +165,7 @@ module.exports = {
         else{
           restoreUserSession(session_id).then((contexts)=>{
             console.log('contexts isArray? '+contexts instanceof Array)
-            if(contexts.length>0){
+            if(contexts instanceof Array && contexts.length>0){
               console.log('API.AI session was restored')
               //send latest message again, only if the session restore worked
               db.getUser(session_id).then((user)=>{
@@ -199,8 +199,8 @@ let restoreUserSession = (session_id) => {
   return new Promise((resolve, reject) => {
     // get session from db
     // POST to api.ai and restore session contexts
-    // resolve contexts
-    console.log('session_id: '+session_id);
+    // resolve context array
+    console.log('session_id in restore: '+session_id)
     db.getUser(session_id).then((user)=>{
       console.log('user contexts: '+JSON.stringify(user.user_session_contexts))
       request({
