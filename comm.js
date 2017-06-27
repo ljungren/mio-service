@@ -34,6 +34,7 @@ module.exports = {
       (error, response, body) => {
         if (error) {
           return console.error('request to api.ai failed:', error)
+          resolve('timeout')
         }
         else if(body){
           if(body.status.code===200){

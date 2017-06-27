@@ -179,13 +179,13 @@ let handleEvent = (data) => {
             console.log('sending api.ai response to slack')
             //update current contexts
             if(response==='timeout'){
-              comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.user.id).then((ok) => {
-                getIntroMess(data.event.user.id).then((response) => {
-                  comm.submitMessage(response, data.event.user.id)
+              comm.submitMessage('Sorry, I have lost what what we were talking about...', data.event.channel).then((ok) => {
+                getIntroMess(data.event.user).then((response) => {
+                  comm.submitMessage(response, data.event.channel)
                 })
               })
             }
-            else if(response[1].length>1){
+            else if(response[1].length>0){
               actions.updateSessionContexts(data.event.user, response[1]).then((ok)=>{
                 console.log('session contexts were updated in db')
                 //pass back response to slack
