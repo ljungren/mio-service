@@ -330,7 +330,8 @@ let findUserDmId = (slack_id) => {
     })
     .on('data', (data) => {
       console.log('recieved slack user info')
-      let ims = JSON.parse(data.ims)
+      console.log(data);
+      let ims = data.ims
       for(var i=0;i<ims.length;i++){
         if(ims[i].user===slack_id){
           resolve(ims[i].id)

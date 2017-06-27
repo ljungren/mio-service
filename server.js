@@ -379,10 +379,7 @@ let teamJoinRestoreMess = (data) => {
     event:{
       type:"message",
       user:data.event.user.id,
-      text:"hello",
-      ts:"1496236345.367828",
-      channel:"",
-      event_ts:"1496236345.367828"
+      text:"hello"
     },
     type:data.type,
     authed_users:data.authed_users,
@@ -391,9 +388,6 @@ let teamJoinRestoreMess = (data) => {
   }
 
   return new Promise((resolve, reject)=>{
-    actions.getUserDmId(data.event.user.id).then((channelId)=>{
-      m.event.channel = channelId
-      resolve(m)
-    })
+    resolve(m)
   })
 }
