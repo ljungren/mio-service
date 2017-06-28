@@ -76,44 +76,38 @@ module.exports = {
   },
   relevance: (context) => {
     //return object based on context
-    let res = {
-      replace_original: false,
-      text: ""
-    }
+    let res
     switch(context){
       case 'sliperiet_action':
-        res.text = btnRes.sliperiet.relevance
+        res = btnRes.sliperiet.relevance
         break
       case 'northern_action':
-        res.text = btnRes.northern.relevance
+        res = btnRes.northern.relevance
         break
       case 'house_action':
-        res.text = btnRes.housebe.relevance
+        res = btnRes.housebe.relevance
         break
       case 'lounge_action':
-        res.text = btnRes.lounge.info
+        res = btnRes.lounge.info
         break
     }
     return res
   },
   practical: (context) => {
     //return object based on context
-    let res = {
-      replace_original: false,
-      text: ""
-    }
+    let res
     switch(context){
       case 'sliperiet_action':
-        res.text = btnRes.sliperiet.practical
+        res = btnRes.sliperiet.practical
         break
       case 'northern_action':
-        res.text = btnRes.northern.practical
+        res = btnRes.northern.practical
         break
       case 'house_action':
-        res.text = btnRes.housebe.practical
+        res = btnRes.housebe.practical
         break
       case 'lounge_action':
-        res.text = btnRes.lounge.practical
+        res = btnRes.lounge.practical
         break
     }
     return res
