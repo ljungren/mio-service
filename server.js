@@ -84,7 +84,7 @@ service.post('/webhook', (req,res,next) => {
 
         if(action==='location_search'){
           //first search, give onboarding example
-          giveContextExample(user_slack_id)
+          giveHint(user_slack_id)
         }
       })
     }
@@ -271,15 +271,17 @@ let getResponse = (action, context, slack_id=null) => {
     case 'relevance_ask':
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
-        //respond with context aware information
-        resolve("_Here I will give information about the relevant people, companies and community etc for the current office context_")
+        //respond with context information
+        console.log(actions.relevance(context))
+        resolve(actions.relevance(context))
       })
       break
     case 'practical_ask':
-      console.log('relevance was asked')
+      console.log('practical info was asked')
       return new Promise((resolve, reject) => {
         //respond with specific location, rent and space
-        resolve("_Here I will tell you practical details about the current office context_")
+        console.log(actions.practical(context))
+        resolve(actions.practical(context))
       })
       break
     case 'search_again':
@@ -361,9 +363,12 @@ let getContactMess = (id) => {
   })
 }
 
-let giveContextExample = (slack_id) => {
+let giveHint = (slack_id) => {
   delay(3000).then(() => {
-    comm.submitMessage("_You can for example ask about why and how this office is a good option, who works there, price etc. Or tell me how you would like it to be different._", slack_id)
+    comm.submitMessage("_The details are not reality based, just hypothetical_", slack_id)
+    delay(2000).then(() => {
+      comm.submitMessage("_You can now for example ask about why and how this office is a good option, who works there, price etc. Or tell me how you would like it to be different._", slack_id)
+    })
   })
 }
 

@@ -10,7 +10,7 @@ module.exports = {
     return responses[Math.floor(Math.random()*responses.length)]
   },
   existing_context: (context) => {
-    return 'Have you contacted '+getName(context)+' yet? or would you like to continue searching for an office?'
+    return 'Have you contacted '+getName(context)+' yet? Any questions? Or would you like to continue searching for an office?'
   }
 }
 

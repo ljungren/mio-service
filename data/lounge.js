@@ -20,8 +20,8 @@ module.exports = {
           'short': false
         }
       ],
-      image_url: 'https://storage.googleapis.com/objektia-production.appspot.com/_/resources/5866040579850240/images/businesslounge_se_wp_content_uploads_FullSizeRender_1024x768_jpg.jpg',
-      thumb_url: 'https://storage.googleapis.com/objektia-production.appspot.com/_/resources/5866040579850240/images/businesslounge_se_wp_content_uploads_FullSizeRender_1024x768_jpg.jpg',
+      image_url: 'http://www.businesslounge.se/wp-content/uploads/BL_05-1024x683.jpg',
+      thumb_url: 'http://www.businesslounge.se/wp-content/uploads/BL_05-1024x683.jpg',
       footer: '',
       footer_icon: '',
       ts: 0,
@@ -50,3 +50,5 @@ module.exports = {
     }
   ]
 }
+
+//https://storage.googleapis.com/objektia-production.appspot.com/_/resources/5866040579850240/images/businesslounge_se_wp_content_uploads_FullSizeRender_1024x768_jpg.jpg
