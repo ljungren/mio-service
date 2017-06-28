@@ -272,16 +272,18 @@ let getResponse = (action, context, slack_id=null) => {
       console.log('relevance was asked')
       return new Promise((resolve, reject) => {
         //respond with context information
-        console.log(actions.relevance(context))
-        resolve(actions.relevance(context))
+        actions.getContext(slack_id).then((cont)=>{
+          resolve(actions.relevance(cont))
+        })
       })
       break
     case 'practical_ask':
       console.log('practical info was asked')
       return new Promise((resolve, reject) => {
         //respond with specific location, rent and space
-        console.log(actions.practical(context))
-        resolve(actions.practical(context))
+        actions.getContext(slack_id).then((cont)=>{
+          resolve(actions.practical(cont))
+        })
       })
       break
     case 'search_again':

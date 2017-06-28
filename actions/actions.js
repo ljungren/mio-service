@@ -74,28 +74,6 @@ module.exports = {
     }
     return sliperiet
   },
-  practical: (context) => {
-    //return object based on context
-    let res = {
-      replace_original: false,
-      text: ""
-    }
-    switch(context){
-      case 'sliperiet_action':
-        res.text = btnRes.sliperiet.practical
-        break
-      case 'northern_action':
-        res.text = btnRes.northern.practical
-        break
-      case 'house_action':
-        res.text = btnRes.housebe.practical
-        break
-      case 'lounge_action':
-        res.text = btnRes.lounge.practical
-        break
-    }
-    return res
-  },
   relevance: (context) => {
     //return object based on context
     let res = {
@@ -114,6 +92,28 @@ module.exports = {
         break
       case 'lounge_action':
         res.text = btnRes.lounge.info
+        break
+    }
+    return res
+  },
+  practical: (context) => {
+    //return object based on context
+    let res = {
+      replace_original: false,
+      text: ""
+    }
+    switch(context){
+      case 'sliperiet_action':
+        res.text = btnRes.sliperiet.practical
+        break
+      case 'northern_action':
+        res.text = btnRes.northern.practical
+        break
+      case 'house_action':
+        res.text = btnRes.housebe.practical
+        break
+      case 'lounge_action':
+        res.text = btnRes.lounge.practical
         break
     }
     return res
