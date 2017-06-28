@@ -55,7 +55,7 @@ module.exports = {
     //send normal message to slack
     createWebClient()
     return new Promise((resolve, reject) => {
-      web.chat.postMessage(channel, text, { as_user: true, replace_original: false}, (err, res) => {
+      web.chat.postMessage(channel, text, { as_user: true, unfurl_links: false, replace_original: false}, (err, res) => {
         if (err) {
           console.log('Error:', err)
         } else {
