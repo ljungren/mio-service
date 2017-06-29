@@ -317,7 +317,7 @@ let doIntroAddOn = (slack_id) => {
   delay(4000).then(() => {
     comm.submitMessage("--------\n\nIt's not as complicated as it sounds, promise :wink:", slack_id)
     delay(2000).then(() => {
-      comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what it is your company does.* ', slack_id)
+      comm.submitMessage('--------\n\nI am just a prototype, and the purpose is to evaluate this type of interface, not to give real results. However, I can learn about your company and consider your thoughts about my suggestions, so please comment on my results so that I can serve your needs.\n\n*You can start by briefly explaining to me what field your company acts within.* ', slack_id)
     })
   })
 }

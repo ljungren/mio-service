@@ -32,7 +32,7 @@ module.exports = {
         res.text = btnRes.housebe.contact
         break
       case 'lounge_action':
-        res.text = btnRes.housebe.contact
+        res.text = btnRes.lounge.contact
         break
     }
     return res
