@@ -369,7 +369,7 @@ let giveHint = (slack_id) => {
   delay(3000).then(() => {
     comm.submitMessage("_The details are not reality based, just hypothetical_", slack_id)
     delay(2000).then(() => {
-      comm.submitMessage("_You can now for example ask about why and how this office is a good option, who works there, price etc. Or tell me how you would like it to be different._", slack_id)
+      comm.submitMessage("_You can now for example comment on my suggestion, ask about it, who works there, price etc. Or tell me how you would like it to be different._", slack_id)
     })
   })
 }
