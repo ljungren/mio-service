@@ -88,7 +88,7 @@ module.exports = {
         res = btnRes.housebe.relevance
         break
       case 'lounge_action':
-        res = btnRes.lounge.info
+        res = btnRes.lounge.relevance
         break
     }
     return res
