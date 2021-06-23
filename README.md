@@ -1,7 +1,7 @@
 # mio-service
-A web service consumed by a slackbot named Mio.
+This is a node.js web service consumed by a slackbot named Mio.
 
-Mio is a conversational prototype for helping companies find personalized office space relevant to their specific needs. Created as part of my master thesis project. The slack API consumes this node.js webservice with a connected postgres database and the natural language processing was created with api.ai (DialogFlow).
+Mio is a conversational prototype for helping companies find personalized office space relevant to their specific needs. Created as part of my master thesis project. The slack API consumes this web service with a connected postgres database and the natural language processing was created with api.ai (DialogFlow).
 
 ![mio_architecture](https://user-images.githubusercontent.com/9825650/122874839-c82b3600-d333-11eb-9c4f-da7254473cfd.jpg)
 
